@@ -28,7 +28,7 @@ SCOPE=st.secrets["auth"]["google"]["scope"]
 REDIRECT_URI=st.secrets["auth"]["google"]["redirect_uri"]
 oauth2 = OAuth2Component(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_URL, TOKEN_URL)
 
-email = st.experimental_user.email
+email = getattr(st.experimental_user, "email", None)
 
 # Intentar obtener token guardado
 token_data = getAuthToken(email)
