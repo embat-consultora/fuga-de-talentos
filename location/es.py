@@ -1,0 +1,23 @@
+texts = {
+    "greetings":"Hola",
+    "title": "Bienvenido a P+Data",
+    "username": "Email",
+    "password": "Contraseña",
+    "forgotPassword": "Olvidé mi contraseña",
+    "loginButton": "Iniciar Sesión",
+    "logoutButton": "Desloguearse",
+    "errorRedirection": "Sesión expirada. Redirigiendo a login...",
+    "IncorrectPassword": "Email o contraseña incorrectos. Intente nuevamente",
+    "logoutMessage": "Deslogueo exitoso",
+    "loginMessage": "Sesión iniciada exitosamente",
+    "loginDescription": "Por favor, para comenzar inicie sesión",
+    "titleRegisterUser":"📋 Usuarios registrados",
+    "titleUsers":"Usuarios",
+    "titleClients":"Clientes",
+    "titleCalendar":"Agenda",
+    "titleInterview":"Entrevista",
+    "titlePreliminarData":"Datos Preliminares",
+    "connectToGoogle":"Conectar con Google Calendar",
+    "calendarNoEvents":"No hay eventos próximos.",
+    "calendarLinkButton":"Agregar o modificar reunión"
+}
