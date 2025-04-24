@@ -4,3 +4,4 @@ supabase
 python-dotenv
 streamlit-oauth
 streamlit_calendar
+st-gsheets-connection
