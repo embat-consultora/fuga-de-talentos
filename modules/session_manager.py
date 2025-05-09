@@ -6,7 +6,8 @@ def redirect_by_role():
         "admin": "pages/dashboard_admin.py",
         "psicologo": "pages/dashboard_psicologos.py",
         "pm": "pages/pm_usuarios.py",
-        "consultora": "pages/consultora_calendar.py"
+        "consultora": "pages/consultora_calendar.py",
+        "cliente": "pages/cliente_planning.py"
     }
     rol = st.session_state.get("role")
     if rol in rutas:
@@ -32,13 +33,13 @@ def load_user(email):
 def is_authenticated():
     return (
         st.session_state.get("logged_in") or
-        (hasattr(st, "experimental_user") and st.experimental_user and st.experimental_user.is_logged_in)
+        (hasattr(st, "user") and st.user and st.user.is_logged_in)
     )
 
 def validate_get_user():
-    if hasattr(st, "experimental_user") and st.experimental_user and st.experimental_user.is_logged_in:
+    if hasattr(st, "user") and st.user and st.user.is_logged_in:
         if "role" not in st.session_state:
-            email = st.experimental_user.email
+            email = st.user.email
             if load_user(email):
                 print('user loaded correctly')
                 return True
