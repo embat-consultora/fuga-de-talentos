@@ -8,3 +8,7 @@ st-gsheets-connection
 google-auth
 google-auth-httplib2 
 google-api-python-client
+chart_studio
+python-docx 
+docxtpl 
+pdfkit

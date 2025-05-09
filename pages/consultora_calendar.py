@@ -9,6 +9,7 @@ import datetime
 from modules.utils import getLanguage
 from streamlit_oauth import OAuth2Component
 from datetime import datetime,timezone
+st.session_state["current_page"] = "consultora_calendar"
 apply_page_config()
 is_logged()
 validate_get_user()
@@ -28,7 +29,7 @@ SCOPE=st.secrets["auth"]["google"]["scope"]
 REDIRECT_URI=st.secrets["auth"]["google"]["redirect_uri"]
 oauth2 = OAuth2Component(CLIENT_ID, CLIENT_SECRET, AUTHORIZE_URL, TOKEN_URL)
 
-email = getattr(st.experimental_user, "email", None)
+email = getattr(st.experimental_user, "email", None) 
 
 # Intentar obtener token guardado
 token_data = getAuthToken(email)

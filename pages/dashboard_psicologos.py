@@ -5,6 +5,7 @@ from modules.sheet_connection import get_google_sheet, get_sheets
 from variables import sheet_id, sheet_psicologos, sheet_agenda
 from modules.page_utils import apply_page_config
 from modules.session_manager import validate_get_user,is_logged
+st.session_state["current_page"] = "dashboard_psicologos"
 apply_page_config()
 is_logged()
 validate_get_user()

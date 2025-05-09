@@ -8,9 +8,10 @@ import string
 from variables import languages, roles
 import pandas as pd
 from modules.page_utils import apply_page_config
-
+from modules.components import top_menu
+st.session_state["current_page"] = "pm_usuarios"
 apply_page_config()
-
+top_menu()
 is_logged()
 validate_get_user()
 lang = getLanguage(st.session_state.language)

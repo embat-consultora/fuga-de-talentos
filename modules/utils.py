@@ -4,7 +4,6 @@ from streamlit_calendar import calendar
 import pandas as pd
 from datetime import timedelta
 import importlib
-
 def createCalendario(eventos):
     with st.container():
         st.subheader("Agenda")
@@ -53,7 +52,6 @@ def createCalendario(eventos):
         if selected_date:
             details_placeholder.markdown(f"**Evento:** {selected_date['eventClick']['event']['title']}\n**Dia:** {selected_date['eventClick']['event']['start']}")
 
-
 def create_events(df, title_template=None, duration_minutes=60):
     events = []
     for _, row in df.iterrows():
@@ -80,3 +78,22 @@ def getLanguage(userLang):
     lang_module = importlib.import_module(f"location.{userLang}")
     t = lang_module.texts
     return t
+
+def calcultaPlanningDates(phases, start_date):
+    datos = []
+    fecha_inicio = start_date
+
+    for phase in phases:
+        fecha_inicio += timedelta(days=phase['days_from_last'])
+        fecha_fin = fecha_inicio + timedelta(days=phase['days_duration'])
+
+        datos.append({
+            "Tarea": phase["etapa"],
+            "Inicio": fecha_inicio,
+            "Fin": fecha_fin
+        })
+
+        fecha_inicio = fecha_fin
+
+    return pd.DataFrame(datos)
+

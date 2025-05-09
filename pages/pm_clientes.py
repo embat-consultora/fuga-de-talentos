@@ -5,8 +5,10 @@ import pandas as pd
 from modules.page_utils import apply_page_config
 from modules.navigation import render_menu
 from modules.session_manager import is_logged,validate_get_user
+from modules.components import top_menu
+st.session_state["current_page"] = "pm_clientes"
 apply_page_config()
-
+top_menu()
 is_logged()
 validate_get_user()
 lang = getLanguage(st.session_state.language)
@@ -18,7 +20,6 @@ st.markdown(
 )
 
 companies = get("company") or []
-print(companies)
 # Obtener estados únicos y agregar opción "Todos"
 estados_disponibles = sorted(set(c["estado"] for c in companies if "estado" in c))
 estados_disponibles.insert(0, "Todos")

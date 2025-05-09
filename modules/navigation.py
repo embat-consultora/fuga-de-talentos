@@ -49,6 +49,13 @@ def render_menu(role):
 
                 if st.button(lang['logoutButton']):
                     st.logout()
+            if(role=="cliente"):
+                st.page_link("pages/cliente_planning.py", label=lang['menuClientPlanning'])
+                st.write("")
+                st.write("")
+
+                if st.button(lang['logoutButton']):
+                    st.logout()
         elif get_current_page_name() != "streamlit_app":
             # If anyone tries to access a secret page without being logged in,
             # redirect them to the login page

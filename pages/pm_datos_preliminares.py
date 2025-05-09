@@ -3,6 +3,7 @@ from modules.utils import getLanguage
 from modules.navigation import render_menu
 from modules.page_utils import apply_page_config
 from modules.session_manager import is_logged,validate_get_user
+st.session_state["current_page"] = "pm_datos_preliminares"
 apply_page_config()
 
 is_logged()

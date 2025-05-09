@@ -1,12 +1,33 @@
 texts = {
+    "greetings": "Olá",
+    "title": "Bem-vindo ao P+Data",
     "username": "Email",
     "password": "Senha",
-    "forgotPassword": "Esqueci minha senha",
+    "forgotPassword": "Esqueceu sua senha",
     "loginButton": "Entrar",
     "logoutButton": "Sair",
     "errorRedirection": "Sessão expirada. Redirecionando para o login...",
     "IncorrectPassword": "Email ou senha incorretos. Tente novamente",
+    "homeLoginRedirect": "Redirecionando para a página de login...",
     "logoutMessage": "Logout realizado com sucesso",
     "loginMessage": "Login realizado com sucesso",
-    "loginDescription": "Por favor, faça login para começar"
+    "loginDescription": "Por favor, faça login para começar",
+    "titleRegisterUser": "📋 Usuários registrados",
+    "titleUsers": "Usuários",
+    "titleClients": "Clientes",
+    "titleCalendar": "Agenda",
+    "titleInterview": "Entrevista",
+    "titlePreliminarData": "Dados Preliminares",
+    "connectToGoogle": "Conectar com Google Calendar",
+    "calendarNoEvents": "Não há eventos futuros.",
+    "calendarLinkButton": "Adicionar ou modificar reunião",
+    "homePageTitle": "Atraia, Contrate e Desenvolva Talentos",
+    "homePageSubtitle": "Nossa plataforma movida por inteligência artificial e configurada de acordo com a ciência avançada do comportamento permite o sucesso e o desempenho dos candidatos em qualquer cargo.",
+    "homeBenefits": "Benefícios",
+    "homeClientsTitle": "O que nossos clientes dizem",
+    "homeTestimonial": [
+        {"name": "Ana García", "testimonial": "Esta plataforma mudou a forma como contratamos. Os resultados foram surpreendentes."},
+        {"name": "Carlos Méndez", "testimonial": "O sistema nos ajudou a identificar candidatos de alto potencial que não teríamos considerado de outra forma."},
+        {"name": "Laura Pérez", "testimonial": "Graças à plataforma, agora temos funcionários mais engajados e produtivos."}
+    ]
 }

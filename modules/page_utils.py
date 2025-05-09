@@ -6,7 +6,7 @@ lang = getLanguage(st.session_state.get("language", "es"))
 def apply_page_config():
     st.set_page_config(
         page_title=lang['title'],
-        page_icon=page_icon,  # You can use an emoji or a URL to an icon image
+        
         layout="wide", # Optional: You can set the layout as "centered" or "wide"
         initial_sidebar_state="collapsed"
     )
@@ -57,3 +57,5 @@ def createCalendar(events):
     """
 
       calendar(events=calendar_events, options=calendar_options,custom_css=custom_css)
+
+
