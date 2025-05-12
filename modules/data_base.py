@@ -27,7 +27,9 @@ def getUserRolAndCompany(tableName, variable, value):
     )
     return response.data
 
-
+def getUserById(user_id):
+    response = supabase.table(tables.usersTable).select("*").eq("id", user_id).execute()
+    return response.data
 def getUserCompany(tableName, variable, value):
     response = (
         supabase
@@ -55,8 +57,14 @@ def getInformeIdiomasByEvaluado(evaluado_id):
 def getCompetencias(value):
     response = supabase.table(tables.competenciasTable).select('nombre,order, id').eq('lang', value).execute()
     return response.data
+def getCompetenciaById(compId):
+    response = supabase.table(tables.competenciasTable).select('nombre').eq('id', compId).execute()
+    return response.data
 def addCompetenciaInforme(data_comp):
     response = supabase.table(tables.informeValoracionCompetencia).insert(data_comp).execute()
+    return response.data
+def getInformeCompetenciasByEvaluado(evaluado_id):
+    response = supabase.table(tables.informeValoracionCompetencia).select("*").eq("evaluadoId", evaluado_id).execute()
     return response.data
 def addCompany(data):
     return supabase.table(tables.companyTable).insert(data).execute()
@@ -109,7 +117,13 @@ def saveInforme():
         "fecha": st.session_state.informe.get("fecha"),
         "evaluadoId": evaluado_id,
         "formacionAcademica": st.session_state.informe.get("formacionAcademica", ""),
-        "experienciaProfesional": st.session_state.informe.get("experienciaProfesional", "")
+        "experienciaProfesional": st.session_state.informe.get("experienciaProfesional", ""),
+        "capacidadPotencialActual": st.session_state.informe.get("capacidadPotencialActual", ""),
+        "capacidadPotencialFutura": st.session_state.informe.get("capacidadPotencialFutura", ""),
+        "conclusiones": st.session_state.informe.get("conclusiones", ""),
+        "recomendaciones": st.session_state.informe.get("recomendaciones", ""),
+        "propuestasDesarrollo": st.session_state.informe.get("propuestas", "")
+
     }
 
     if existing[0] and len(existing[0]) > 0:
@@ -155,9 +169,12 @@ def generarInformeCompleto(consultora_id, evaluado_id):
     if response.data:
         informe = response.data[0]
         idiomas = getInformeIdiomasByEvaluado(evaluado_id)
+        compentencias = getInformeCompetenciasByEvaluado(evaluado_id)
         evaluado = getEvaluadoById(evaluado_id)
+        consultora = getUserById(consultora_id)
         informe["posicion"] = evaluado[0]["posicion"]
         informe["departamento"] = evaluado[0]["departamento"]
+        informe["consultoraNombre"]= consultora[0]["name"]
         idioma_dict = {}
         for i in idiomas:
             idioma_nombre = getIdiomaById(i["idiomaId"])
@@ -166,7 +183,15 @@ def generarInformeCompleto(consultora_id, evaluado_id):
                 "nivel": i["nivel"]
             }
         informe["Idiomas"] = idioma_dict
-
+        compentencias_dict = {}
+        for i in compentencias:
+            compentencia_nombre = getCompetenciaById(i["competenciaId"])
+            compentencias_dict[compentencia_nombre[0]['nombre']] = {
+                "id": i["competenciaId"],
+                "valor": i["valor"],
+                "comment": i["texto"]
+            }
+        informe["Competencias"] = compentencias_dict
         return informe
     else:
         st.error("No se encontró el informe.")

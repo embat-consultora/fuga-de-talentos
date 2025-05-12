@@ -3,10 +3,18 @@ import io
 import os
 from modules.data_base import generarInformeCompleto
 import streamlit as st
+from modules.graph_utils import crear_grafico_idiomas
+from docx.shared import Mm
+from docxtpl import DocxTemplate, InlineImage
+
 def generar_docx_con_datos(informe_data):
     base_path = os.path.dirname(os.path.abspath(__file__))
     plantilla_path = os.path.join(base_path, "..", "template", "informeCompleto.docx")
     doc = DocxTemplate(plantilla_path)
+
+    grafico_idiomas = crear_grafico_idiomas(informe_data["Idiomas"])
+    imagen = InlineImage(doc, grafico_idiomas, width=Mm(120))  # ajustar tamaño según plantilla
+
     context = {
         "nombre": informe_data["evaluado"]["nombre"],
         "posicion": informe_data["posicion"],
@@ -14,17 +22,24 @@ def generar_docx_con_datos(informe_data):
         "fecha": informe_data["fecha"],
         "formacionAcademica": informe_data["formacionAcademica"],
         "experienciaProfesional": informe_data["experienciaProfesional"],
-        "idiomas": ", ".join([
-            f'{idioma}: nivel {info["nivel"]}'
-            for idioma, info in informe_data["Idiomas"].items()
-        ])
+        "idiomas": imagen,
+        "capacidadPotencialFutura": informe_data["capacidadPotencialFutura"],
+        "capacidadPotencialActual": informe_data["capacidadPotencialActual"],
+        "consutoraNombre": informe_data["consultoraNombre"],
+        "conclusiones": informe_data["conclusiones"],
+        "recomendaciones": informe_data["recomendaciones"],
+        "propuestasDesarrollo": informe_data["propuestasDesarrollo"],
     }
-
+    for idx, (nombre, datos) in enumerate(informe_data.get("Competencias", {}).items(), 1):
+            context[f"competencia_{idx}"] = nombre
+            context[f"valor_{idx}"] = datos["valor"]
+            context[f"comments_{idx}"] = datos["comment"]
     doc.render(context)
     buffer = io.BytesIO()
     doc.save(buffer)
     buffer.seek(0)
     return buffer
+
 
 def generarInforme():
     informe = generarInformeCompleto(

@@ -44,7 +44,12 @@ formacionAcademicaContainer = st.container(key='formacionAcademicaContainer')
 languagesContainer = st.container(key='languagesContainer')
 experienciaProfesionalContainer = st.container(key='experienciaProfesionalContainer')
 competenciasContainer = st.container(key="competenciaContainer")
-
+capacidadPotencialActualContainer = st.container(key='capacidadPotencialActualContainer')
+capacidadPotencialFuturaContainer = st.container(key='capacidadPotencialFuturaContainer')
+balanceEmocionalContainer = st.container(key='balanceEmocionalContainer')
+recomendacionesContainer = st.container(key='recomendacionesContainer')
+propuestaDesarrolloContainer = st.container(key='propuestaDesarrolloContainer')
+conclusionesContainer = st.container(key='conclusionesContainer')
 
 with formacionAcademicaContainer:
     with st.expander(lang["InterviewFormacionAcademicaText"]):
@@ -87,7 +92,6 @@ with experienciaProfesionalContainer:
 
         st.session_state.informe['experienciaProfesional']= experienciaProfesional
 with competenciasContainer:
-
     competenciasNombres = [e['nombre'] for e in competencias]
     with st.expander(lang["InverviewCompetenceTitle"]):
         competenciaSeleccionada = st.selectbox(lang["SelectValue"], competenciasNombres)
@@ -95,7 +99,7 @@ with competenciasContainer:
         valoracion_default = datos_previos.get('valoracion', 5)
         comentario_default = datos_previos.get('comentario', "")
         valoracion = st.selectbox(lang["Valor"],options=list(range(1, 11)),index=valoracion_default - 1)
-        comentario = st.text_area(f"{competenciaSeleccionada}:",value=comentario_default)
+        comentario = st.text_area(f"{competenciaSeleccionada}:")
         competenciaEvaluada = next((e for e in competencias if e['nombre'] == competenciaSeleccionada), None)
         st.session_state.informe['competencias'][competenciaSeleccionada] = {
                     'nombre': competenciaSeleccionada,
@@ -103,6 +107,42 @@ with competenciasContainer:
                     'comentario': comentario,
                     'competenciaId': competenciaEvaluada["id"]
                 }
+with capacidadPotencialActualContainer:
+    with st.expander(lang["InterviewCapacidadPotencialActual"]):
+        col1, col2, col3 = st.columns([2,3,2])
+        with col2:
+            st.subheader(lang["InterviewCapacidadPotencialActual"])
+        capacidadPotencialActual = st.text_area("",key="capacidadPotencialActualKey")
+        st.session_state.informe['capacidadPotencialActual']= capacidadPotencialActual
+with capacidadPotencialFuturaContainer:
+    with st.expander(lang["InterviewCapacidadPotencialFutura"]):
+        col1, col2, col3 = st.columns([2,3,2])
+        with col2:
+            st.subheader(lang["InterviewCapacidadPotencialFutura"])
+        capacidadPotencialFutura = st.text_area("",key="capacidadPotencialFuturaKey")
+        st.session_state.informe['capacidadPotencialFutura']= capacidadPotencialFutura
 
+with conclusionesContainer:
+    with st.expander(lang["InterviewConclusiones"]):
+        col1, col2, col3 = st.columns([2,3,2])
+        with col2:
+            st.subheader(lang["InterviewConclusiones"])
+        conclusiones = st.text_area("",key="conclusionesKey")
+        st.session_state.informe['conclusiones']= conclusiones
+with recomendacionesContainer:
+    with st.expander(lang["InterviewRecomendaciones"]):
+        col1, col2, col3 = st.columns([2,3,2])
+        with col2:
+            st.subheader(lang["InterviewRecomendaciones"])
+        recomendaciones = st.text_area("",key="recomendacionesKey")
+        st.session_state.informe['recomendaciones']= recomendaciones
+with propuestaDesarrolloContainer:
+    with st.expander(lang["InterviewAccionesDesarrollo"]):
+        col1, col2, col3 = st.columns([2,3,2])
+        with col2:
+            st.subheader(lang["InterviewAccionesDesarrollo"])
+        propuestas = st.text_area("",key="propuestasKey")
+        st.session_state.informe['propuestas']= propuestas
+        
 if st.button(lang["InterviewSaveButton"]):
     saveInforme()
