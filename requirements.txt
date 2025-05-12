@@ -12,3 +12,4 @@ chart_studio
 python-docx 
 docxtpl 
 pdfkit
+matplotlib
