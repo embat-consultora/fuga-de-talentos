@@ -47,9 +47,10 @@ competenciasContainer = st.container(key="competenciaContainer")
 capacidadPotencialActualContainer = st.container(key='capacidadPotencialActualContainer')
 capacidadPotencialFuturaContainer = st.container(key='capacidadPotencialFuturaContainer')
 balanceEmocionalContainer = st.container(key='balanceEmocionalContainer')
+conclusionesContainer = st.container(key='conclusionesContainer')
 recomendacionesContainer = st.container(key='recomendacionesContainer')
 propuestaDesarrolloContainer = st.container(key='propuestaDesarrolloContainer')
-conclusionesContainer = st.container(key='conclusionesContainer')
+
 
 with formacionAcademicaContainer:
     with st.expander(lang["InterviewFormacionAcademicaText"]):
@@ -143,6 +144,6 @@ with propuestaDesarrolloContainer:
             st.subheader(lang["InterviewAccionesDesarrollo"])
         propuestas = st.text_area("",key="propuestasKey")
         st.session_state.informe['propuestas']= propuestas
-        
+
 if st.button(lang["InterviewSaveButton"]):
     saveInforme()
