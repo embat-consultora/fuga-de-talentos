@@ -11,15 +11,14 @@ def generar_docx_con_datos(informe_data):
     base_path = os.path.dirname(os.path.abspath(__file__))
     plantilla_path = os.path.join(base_path, "..", "template", "informeCompleto.docx")
     doc = DocxTemplate(plantilla_path)
-
-    grafico_idiomas = crear_grafico_idiomas(informe_data["Idiomas"])
+    grafico_idiomas = crear_grafico_idiomas(informe_data["idiomas"])
     imagen = InlineImage(doc, grafico_idiomas, width=Mm(120))  # ajustar tamaño según plantilla
 
     context = {
         "nombre": informe_data["evaluado"]["nombre"],
         "posicion": informe_data["posicion"],
         "departamento": informe_data["departamento"],
-        "fecha": informe_data["fecha"],
+        "updated_date": informe_data["updated_date"],
         "formacionAcademica": informe_data["formacionAcademica"],
         "experienciaProfesional": informe_data["experienciaProfesional"],
         "idiomas": imagen,
@@ -30,10 +29,16 @@ def generar_docx_con_datos(informe_data):
         "recomendaciones": informe_data["recomendaciones"],
         "propuestasDesarrollo": informe_data["propuestasDesarrollo"],
     }
-    for idx, (nombre, datos) in enumerate(informe_data.get("Competencias", {}).items(), 1):
-            context[f"competencia_{idx}"] = nombre
-            context[f"valor_{idx}"] = datos["valor"]
-            context[f"comments_{idx}"] = datos["comment"]
+    competencias_context = []
+
+    for nombre, datos in informe_data.get("Competencias", {}).items():
+        competencias_context.append({
+            "competenciaNombre": datos["competenciaNombre"],
+            "valor": datos["nivelId"][0]["nombre"],
+            "comment": datos["comment"]
+        })
+
+    context["competencias"] = competencias_context
     doc.render(context)
     buffer = io.BytesIO()
     doc.save(buffer)

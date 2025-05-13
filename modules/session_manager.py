@@ -47,10 +47,38 @@ def validate_get_user():
                 st.error("Tu cuenta de Google no está autorizada.")
                 st.stop()
 
-# Verificación inicial en cualquier página protegida
 def is_logged():
     if not is_authenticated():
         st.warning("Redirigiendo al inicio de sesión...")
         st.session_state.logged_in = False
         st.session_state.redirected = True
         st.switch_page("app.py")
+
+def loadInforme(informe):
+        st.session_state.informe = informe[0]
+        idiomasInforme = []
+        st.session_state.informe["competencias"] = {}
+        for item in informe[0].get("informeIdiomaNiveles", []):
+            idioma = item.get("idiomas", {})
+            nivel = item.get("idiomaNivel", {})
+            idiomasInforme.append({
+                "id": idioma.get("id"),
+                "nombre": idioma.get("idioma"),
+                "nivel": nivel.get("nombre"),
+                "nivel_id": nivel.get("id")
+            })
+        st.session_state.informe["idiomas"] = idiomasInforme
+
+        competencias_dict = {}
+
+        for item in informe[0].get("informeValoracionCompetencia", []):
+            nombre_comp = item.get("competenciaNombre", "")
+            competencias_dict[nombre_comp] = {
+                "competencia": nombre_comp,
+                "valoracion": item.get("nivelId", {}).get("nombre", ""),
+                "comentario": item.get("texto", ""),
+                "nivelId": item.get("nivelId", {}).get("id")
+            }
+
+        st.session_state.informe["competencias"] = competencias_dict
+        st.session_state.informe_cargado = True

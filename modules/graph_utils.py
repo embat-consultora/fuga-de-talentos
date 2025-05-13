@@ -1,26 +1,47 @@
 import matplotlib.pyplot as plt
-from docxtpl import DocxTemplate, InlineImage
-from docx.shared import Mm
 import io
 
+niveles_valor = {
+    "Básico": 30,
+    "Intermedio": 60,
+    "Avanzado": 90,
+    "Nativo": 100
+}
+
 def crear_grafico_idiomas(idiomas_data):
-    fig, ax = plt.subplots(figsize=(6, 2))
-    niveles = [info["nivel"] for info in idiomas_data.values()]
-    etiquetas = list(idiomas_data.keys())
-    colores = ['#f28e8e', '#f7ca88', '#a8d5a2', '#99d9ea']  # colores suaves
+    labels = []
+    values = []
+    
+    for idioma, datos in idiomas_data.items():
+        nivel_nombre = datos["nivel"][0]["nombre"]
+        valor = niveles_valor.get(nivel_nombre, 0)
+        labels.append(f"{idioma} - {nivel_nombre}")
+        values.append(valor)
 
-    ax.barh(etiquetas, niveles, color=colores[:len(etiquetas)])
-    ax.set_xlim(0, 10)
-    ax.set_xlabel('Nivel')
-    ax.set_title('Idiomas y nivel')
+    colors = ['#EF5350', '#FFCA28', '#81C784', '#64B5F6'] * ((len(labels) // 4) + 1)
+    colors = colors[:len(labels)]
 
-    for i, v in enumerate(niveles):
-        ax.text(v + 0.2, i, str(v), va='center')
+    fig, ax = plt.subplots(figsize=(6, 0.6 * len(labels)))
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+    bars = ax.barh(range(len(labels)), values, color=colors, height=0.4)
 
+    # Mostrar etiquetas personalizadas
+    ax.set_yticks(range(len(labels)))
+    ax.set_yticklabels(labels)
+    ax.invert_yaxis()
+    ax.set_xlim(0, 100)
+    ax.tick_params(left=False, bottom=False)
+    ax.set_xticks([])
+
+    # Mostrar porcentajes
     plt.tight_layout()
 
-    img_stream = io.BytesIO()
-    plt.savefig(img_stream, format='png')
-    img_stream.seek(0)
-    plt.close()
-    return img_stream
+    # Guardar en un buffer
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png', bbox_inches='tight')
+    plt.close(fig)
+    buffer.seek(0)
+    return buffer
+
+

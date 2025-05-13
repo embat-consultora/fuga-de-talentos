@@ -3,12 +3,13 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 import os
 from modules import tables
+from modules.utils import getLanguage
 load_dotenv()
 
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
-
+lang = getLanguage(st.session_state.language)
 def get(tableName):
     response = supabase.table(tableName).select('*').execute()
     return response.data
@@ -45,6 +46,12 @@ def getEqual(tableName, variable, value):
 def getIdiomas(value):
     response = supabase.table(tables.idiomasTable).select('idioma, id').eq('lang', value).execute()
     return response.data
+def getIdiomaNiveles(value):
+    response = supabase.table(tables.idiomasNivelesTable).select('nombre, id').eq('lang', value).execute()
+    return response.data
+def getIdiomaNivelesById(idiomaId):
+    response = supabase.table(tables.idiomasNivelesTable).select('nombre').eq('id', idiomaId).execute()
+    return response.data
 def getIdiomaById(idiomaId):
     response = supabase.table(tables.idiomasTable).select('idioma').eq('id', idiomaId).execute()
     return response.data
@@ -54,11 +61,11 @@ def addIdioma(data_idioma):
 def getInformeIdiomasByEvaluado(evaluado_id):
     response = supabase.table(tables.informeIdiomaNivelesTable).select("*").eq("evaluadoId", evaluado_id).execute()
     return response.data
-def getCompetencias(value):
-    response = supabase.table(tables.competenciasTable).select('nombre,order, id').eq('lang', value).execute()
+def getNivelesCompetencias(value):
+    response = supabase.table(tables.nivelesCompetenciasTable).select('nombre,order, id').eq('lang', value).execute()
     return response.data
-def getCompetenciaById(compId):
-    response = supabase.table(tables.competenciasTable).select('nombre').eq('id', compId).execute()
+def getNivelesCompetenciaById(compId):
+    response = supabase.table(tables.nivelesCompetenciasTable).select('nombre').eq('id', compId).execute()
     return response.data
 def addCompetenciaInforme(data_comp):
     response = supabase.table(tables.informeValoracionCompetencia).insert(data_comp).execute()
@@ -100,6 +107,21 @@ def getEvaluadoById(evaluadoId):
 def getInforme(consultoraId, evaluadoId):
     response = supabase.table(tables.informeTable).select("id").eq("consultoraId", consultoraId).eq("evaluadoId", evaluadoId).execute()
     return response.data
+def getCompleteInforme(consultoraId, evaluadoId):
+    response = supabase.table(tables.informeTable).select(
+        """
+        *,
+        informeIdiomaNiveles (
+            idiomas (id,idioma),
+            idiomaNivel (id, nombre)
+        ),
+        informeValoracionCompetencia (
+            texto, competenciaNombre,
+            nivelId: nivelesCompetencias (nombre, id)
+        )
+        """
+    ).eq("consultoraId", consultoraId).eq("evaluadoId", evaluadoId).execute()
+    return response.data
 def createInforme(dataInforme):
     response = supabase.table(tables.informeTable).insert(dataInforme).execute()
     return response.data
@@ -114,7 +136,7 @@ def saveInforme():
     existing = getInforme(consultora_id, evaluado_id)
     dataInforme = {
         "consultoraId": consultora_id,
-        "fecha": st.session_state.informe.get("fecha"),
+        "updated_date": st.session_state.informe.get("updated_date"),
         "evaluadoId": evaluado_id,
         "formacionAcademica": st.session_state.informe.get("formacionAcademica", ""),
         "experienciaProfesional": st.session_state.informe.get("experienciaProfesional", ""),
@@ -125,44 +147,43 @@ def saveInforme():
         "propuestasDesarrollo": st.session_state.informe.get("propuestas", "")
 
     }
-
-    if existing[0] and len(existing[0]) > 0:
+    if existing and existing[0] and len(existing[0]) > 0:
         informe_id = existing[0]["id"]
         response = updateInforme(informe_id, dataInforme)
-        st.write(response)
     else:
         response = createInforme(dataInforme)
         st.write(response)
+        informe_id =response[0]["id"]
     if response[0]:
         supabase.table(tables.informeIdiomaNivelesTable).delete().eq("evaluadoId", evaluado_id).execute()
-
-        for idioma_nombre, info in st.session_state.informe["Idiomas"].items():
+        for info in st.session_state.informe["idiomas"]:
             idioma_id = info["id"]
-            nivel = info["nivel"]
+            nivel = info["nivel_id"]
             data_idioma = {
                 "idiomaId": idioma_id,
                 "evaluadoId": evaluado_id,
-                "nivel": nivel
+                "nivelId": nivel,
+                "informeId":informe_id
             }
             addIdioma(data_idioma)
         supabase.table(tables.informeValoracionCompetencia).delete().eq("evaluadoId", evaluado_id).execute()
         for nombre, infoComp in st.session_state.informe["competencias"].items():
-            st.write(infoComp)
-            competenciaId = infoComp["competenciaId"]
-            nivel = infoComp["valoracion"]
+            competenciaNombre = infoComp["competencia"]
+            nivel = infoComp["nivelId"]
             comment =infoComp["comentario"]
             data_competencia = {
-                "competenciaId": competenciaId,
+                "competenciaNombre": competenciaNombre,
                 "evaluadoId": evaluado_id,
-                "valor": nivel,
-                "texto":comment
+                "nivelId": nivel,
+                "texto":comment,
+                "informeId":informe_id
             }
             addCompetenciaInforme(data_competencia)
 
-        st.success("Guardado correctamente.")
+        st.success(lang["dataSavedCorrectlyMessage"])
         st.rerun()
     else:
-        st.error("Hubo un error al guardar el informe.")
+        st.error(lang["dataSavedErrorMessage"])
 
 def generarInformeCompleto(consultora_id, evaluado_id):
     response = supabase.table(tables.informeTable).select("* , evaluado (*)").eq("consultoraId", consultora_id).eq("evaluadoId", evaluado_id).limit(1).execute()
@@ -178,21 +199,22 @@ def generarInformeCompleto(consultora_id, evaluado_id):
         idioma_dict = {}
         for i in idiomas:
             idioma_nombre = getIdiomaById(i["idiomaId"])
+            idioma_nivel_nombre = getIdiomaNivelesById(i["nivelId"])
             idioma_dict[idioma_nombre[0]['idioma']] = {
                 "id": i["idiomaId"],
-                "nivel": i["nivel"]
+                "nivel": idioma_nivel_nombre
             }
-        informe["Idiomas"] = idioma_dict
+        informe["idiomas"] = idioma_dict
         compentencias_dict = {}
         for i in compentencias:
-            compentencia_nombre = getCompetenciaById(i["competenciaId"])
-            compentencias_dict[compentencia_nombre[0]['nombre']] = {
-                "id": i["competenciaId"],
-                "valor": i["valor"],
+            nivelCompetencia = getNivelesCompetenciaById(i["nivelId"])
+            compentencias_dict[i["competenciaNombre"]] = {
+                "competenciaNombre": i["competenciaNombre"],
+                "nivelId": nivelCompetencia,
                 "comment": i["texto"]
             }
         informe["Competencias"] = compentencias_dict
         return informe
     else:
-        st.error("No se encontró el informe.")
+        st.error(lang["dataNoReportFound"])
         return None
