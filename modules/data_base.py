@@ -3,13 +3,11 @@ from supabase import create_client, Client
 from dotenv import load_dotenv
 import os
 from modules import tables
-from modules.utils import getLanguage
 load_dotenv()
 
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
-lang = getLanguage(st.session_state.language)
 def get(tableName):
     response = supabase.table(tableName).select('*').execute()
     return response.data
@@ -180,10 +178,10 @@ def saveInforme():
             }
             addCompetenciaInforme(data_competencia)
 
-        st.success(lang["dataSavedCorrectlyMessage"])
+        st.success("Guardado correctamente.")
         st.rerun()
     else:
-        st.error(lang["dataSavedErrorMessage"])
+        st.error("Hubo un error al guardar el informe.")
 
 def generarInformeCompleto(consultora_id, evaluado_id):
     response = supabase.table(tables.informeTable).select("* , evaluado (*)").eq("consultoraId", consultora_id).eq("evaluadoId", evaluado_id).limit(1).execute()
@@ -216,5 +214,5 @@ def generarInformeCompleto(consultora_id, evaluado_id):
         informe["Competencias"] = compentencias_dict
         return informe
     else:
-        st.error(lang["dataNoReportFound"])
+        st.error("No se encontró el informe.")
         return None
