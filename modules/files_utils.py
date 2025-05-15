@@ -24,14 +24,18 @@ def generar_docx_con_datos(informe_data):
         "idiomas": imagen,
         "capacidadPotencialFutura": informe_data["capacidadPotencialFutura"],
         "capacidadPotencialActual": informe_data["capacidadPotencialActual"],
-        "consutoraNombre": informe_data["consultoraNombre"],
+        "cpa5": informe_data["cpa5"],
+        "cpa10": informe_data["cpa10"],
+        "modo": informe_data["modo"],
+        "consultoraNombre": informe_data["consultoraNombre"],
         "conclusiones": informe_data["conclusiones"],
         "recomendaciones": informe_data["recomendaciones"],
         "propuestasDesarrollo": informe_data["propuestasDesarrollo"],
+        "potencial": informe_data["potencial"],
     }
     competencias_context = []
 
-    for nombre, datos in informe_data.get("Competencias", {}).items():
+    for nombre, datos in informe_data.get("competencias", {}).items():
         competencias_context.append({
             "competenciaNombre": datos["competenciaNombre"],
             "valor": datos["nivelId"][0]["nombre"],
@@ -39,6 +43,23 @@ def generar_docx_con_datos(informe_data):
         })
 
     context["competencias"] = competencias_context
+    
+    fortaleza_context = []
+    for nombre, datos in informe_data.get("fortalezas", {}).items():
+        fortaleza_context.append({
+            "fortalezaNombre": datos["fortalezaNombre"],
+            "comment": datos["comment"]
+        })
+    context["fortalezas"] = fortaleza_context
+    
+    areaDesarrollo_context = []
+    for nombre, datos in informe_data.get("areaDesarrollo", {}).items():
+        areaDesarrollo_context.append({
+            "areaNombre": datos["areaNombre"],
+            "comment": datos["comment"]
+        })
+
+    context["areaDesarrollo"] = areaDesarrollo_context
     doc.render(context)
     buffer = io.BytesIO()
     doc.save(buffer)

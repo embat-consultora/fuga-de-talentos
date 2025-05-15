@@ -70,7 +70,6 @@ def loadInforme(informe):
         st.session_state.informe["idiomas"] = idiomasInforme
 
         competencias_dict = {}
-
         for item in informe[0].get("informeValoracionCompetencia", []):
             nombre_comp = item.get("competenciaNombre", "")
             competencias_dict[nombre_comp] = {
@@ -79,6 +78,37 @@ def loadInforme(informe):
                 "comentario": item.get("texto", ""),
                 "nivelId": item.get("nivelId", {}).get("id")
             }
-
         st.session_state.informe["competencias"] = competencias_dict
+        
+        st.session_state.informe["fortalezas"] = {}
+        fortaleza_dict = {}
+        for item in informe[0].get("informeFortalezas", []):
+            nombre_form = item.get("nombre", "")
+            fortaleza_dict[nombre_form] = {
+                "nombreFortaleza": nombre_form,
+                "comentario": item.get("comment", ""),
+            }
+        st.session_state.informe["fortalezas"] = fortaleza_dict
+        
+        st.session_state.informe["areaDesarrollo"] = {}
+        area_dict = {}
+        for item in informe[0].get("areaDesarrollo", []):
+            nombre_area = item.get("nombre", "")
+            area_dict[nombre_area] = {
+                "nombreArea": nombre_area,
+                "comentario": item.get("comment", ""),
+            }
+        st.session_state.informe["areaDesarrollo"] = area_dict
+        aspiraciones_dict = {}
+        for item in informe[0].get("informeAspiraciones", []):
+            asp_data = item.get("aspiraciones", {})
+            nombre_asp = asp_data.get("nombre", "")
+            
+            aspiraciones_dict[nombre_asp] = {
+                "aspiracionId": asp_data.get("id", ""),
+                "comentario": item.get("comment", ""),
+                "breveDescripcion": item.get("breveDescripcion", ""),
+            }
+
+        st.session_state.informe["aspiraciones"] = aspiraciones_dict
         st.session_state.informe_cargado = True

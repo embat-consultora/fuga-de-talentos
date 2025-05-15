@@ -53,6 +53,12 @@ def getIdiomaNivelesById(idiomaId):
 def getIdiomaById(idiomaId):
     response = supabase.table(tables.idiomasTable).select('idioma').eq('id', idiomaId).execute()
     return response.data
+def getAspiraciones(value):
+    response = supabase.table(tables.aspiracionesTable).select('nombre,id').eq('lang', value).execute()
+    return response.data
+def getAspiracionesById(compId):
+    response = supabase.table(tables.aspiracionesTable).select('nombre').eq('id', compId).execute()
+    return response.data
 def addIdioma(data_idioma):
     response = supabase.table(tables.informeIdiomaNivelesTable).insert(data_idioma).execute()
     return response.data
@@ -68,8 +74,26 @@ def getNivelesCompetenciaById(compId):
 def addCompetenciaInforme(data_comp):
     response = supabase.table(tables.informeValoracionCompetencia).insert(data_comp).execute()
     return response.data
+def addFortalezaInforme(data_comp):
+    response = supabase.table(tables.informeFortalezasTable).insert(data_comp).execute()
+    return response.data
+def addAreaInforme(data_comp):
+    response = supabase.table(tables.informeAreaDesarrollo).insert(data_comp).execute()
+    return response.data
+def addAspiracionInforme(data_comp):
+    response = supabase.table(tables.informeAspiraciones).insert(data_comp).execute()
+    return response.data
 def getInformeCompetenciasByEvaluado(evaluado_id):
     response = supabase.table(tables.informeValoracionCompetencia).select("*").eq("evaluadoId", evaluado_id).execute()
+    return response.data
+def getInformeFortalezasByEvaluado(evaluado_id):
+    response = supabase.table(tables.informeFortalezasTable).select("*").eq("evaluadoId", evaluado_id).execute()
+    return response.data
+def getInformeAreaDesarrolloByEvaluado(evaluado_id):
+    response = supabase.table(tables.informeAreaDesarrollo).select("*").eq("evaluadoId", evaluado_id).execute()
+    return response.data
+def getInformeAspiracionesByEvaluado(evaluado_id):
+    response = supabase.table(tables.informeAspiraciones).select("*").eq("evaluadoId", evaluado_id).execute()
     return response.data
 def addCompany(data):
     return supabase.table(tables.companyTable).insert(data).execute()
@@ -116,6 +140,13 @@ def getCompleteInforme(consultoraId, evaluadoId):
         informeValoracionCompetencia (
             texto, competenciaNombre,
             nivelId: nivelesCompetencias (nombre, id)
+        ),
+        informeFortalezas (
+            nombre,id, comment
+        ),
+        informeAspiraciones (
+            comment,breveDescripcion,
+            aspiraciones(nombre,id)
         )
         """
     ).eq("consultoraId", consultoraId).eq("evaluadoId", evaluadoId).execute()
@@ -130,7 +161,6 @@ def updateInforme(informeId,dataInforme):
 def saveInforme():
     consultora_id = st.session_state.get("userId")
     evaluado_id = st.session_state.informe["evaluado"]["id"]
-
     existing = getInforme(consultora_id, evaluado_id)
     dataInforme = {
         "consultoraId": consultora_id,
@@ -140,9 +170,16 @@ def saveInforme():
         "experienciaProfesional": st.session_state.informe.get("experienciaProfesional", ""),
         "capacidadPotencialActual": st.session_state.informe.get("capacidadPotencialActual", ""),
         "capacidadPotencialFutura": st.session_state.informe.get("capacidadPotencialFutura", ""),
+        "cpa5": st.session_state.informe.get("cpa5", ""),
+        "cpa10": st.session_state.informe.get("cpa10", ""),
+        "modo": st.session_state.informe.get("modo", ""),
+        "disponibilidad": st.session_state.informe.get("disponibilidad", ""),
+        "breveDescripcionDisponibilidad": st.session_state.informe.get("breveDescripcion", ""),
+        "disponibilidadComment": st.session_state.informe.get("disponibilidadComment", ""),
         "conclusiones": st.session_state.informe.get("conclusiones", ""),
         "recomendaciones": st.session_state.informe.get("recomendaciones", ""),
-        "propuestasDesarrollo": st.session_state.informe.get("propuestas", "")
+        "propuestasDesarrollo": st.session_state.informe.get("propuestasDesarrollo", ""),
+        "potencial": st.session_state.informe.get("potencialNivel", "")
 
     }
     if existing and existing[0] and len(existing[0]) > 0:
@@ -177,7 +214,42 @@ def saveInforme():
                 "informeId":informe_id
             }
             addCompetenciaInforme(data_competencia)
-
+        supabase.table(tables.informeFortalezasTable).delete().eq("evaluadoId", evaluado_id).execute()
+        for nombreFort, fortComp in st.session_state.informe["fortalezas"].items():
+            fortalezaNombre = fortComp["nombreFortaleza"]
+            commentFort =fortComp["comentario"]
+            data_fortaleza = {
+                "nombre": fortalezaNombre,
+                "evaluadoId": evaluado_id,
+                "comment":commentFort,
+                "informeId":informe_id
+            }
+            addFortalezaInforme(data_fortaleza)
+        supabase.table(tables.informeAreaDesarrollo).delete().eq("evaluadoId", evaluado_id).execute()
+        for nombreArea, areaComp in st.session_state.informe["areaDesarrollo"].items():
+            areaNombre = areaComp["nombreArea"]
+            commentArea =areaComp["comentario"]
+            data_fortaleza = {
+                "nombre": areaNombre,
+                "evaluadoId": evaluado_id,
+                "comment":commentArea,
+                "informeId":informe_id
+            }
+            addAreaInforme(data_fortaleza)
+        
+        supabase.table(tables.informeAspiraciones).delete().eq("evaluadoId", evaluado_id).execute()
+        for nombreArea, aspiracionesComp in st.session_state.informe["aspiraciones"].items():
+            aspiracionId = aspiracionesComp["aspiracionId"]
+            breveDescripcionNombre = aspiracionesComp["breveDescripcion"]
+            commentAspiracion =aspiracionesComp["comentario"]
+            data_aspiracion = {
+                "aspiracionesId": aspiracionId,
+                "evaluadoId": evaluado_id,
+                "comment":commentAspiracion,
+                "breveDescripcion":breveDescripcionNombre,
+                "informeId":informe_id
+            }
+            addAspiracionInforme(data_aspiracion)
         st.success("Guardado correctamente.")
         st.rerun()
     else:
@@ -189,6 +261,9 @@ def generarInformeCompleto(consultora_id, evaluado_id):
         informe = response.data[0]
         idiomas = getInformeIdiomasByEvaluado(evaluado_id)
         compentencias = getInformeCompetenciasByEvaluado(evaluado_id)
+        fortalezas = getInformeFortalezasByEvaluado(evaluado_id)
+        areaDesarrollo=getInformeAreaDesarrolloByEvaluado(evaluado_id)
+        aspiraciones=getInformeAspiracionesByEvaluado(evaluado_id)
         evaluado = getEvaluadoById(evaluado_id)
         consultora = getUserById(consultora_id)
         informe["posicion"] = evaluado[0]["posicion"]
@@ -211,7 +286,33 @@ def generarInformeCompleto(consultora_id, evaluado_id):
                 "nivelId": nivelCompetencia,
                 "comment": i["texto"]
             }
-        informe["Competencias"] = compentencias_dict
+        informe["competencias"] = compentencias_dict
+
+        fortalezas_dict = {}
+        for i in fortalezas:
+            fortalezas_dict[i["nombre"]] = {
+                "fortalezaNombre": i["nombre"],
+                "comment": i["comment"]
+            }
+        informe["fortalezas"] = fortalezas_dict
+
+        areaDesarrollo_dict = {}
+        for i in areaDesarrollo:
+            areaDesarrollo_dict[i["nombre"]] = {
+                "areaNombre": i["nombre"],
+                "comment": i["comment"]
+            }
+        informe["areaDesarrollo"] = areaDesarrollo_dict
+
+        aspiraciones_dict = {}
+        for i in aspiraciones:
+            aspiracionNombre = getAspiracionesById(i["id"])
+            aspiraciones_dict[i["nombre"]] = {
+                "aspiracion": aspiracionNombre,
+                "comment": i["comment"],
+                "breveDescripcion": i["breveDescripcion"]
+            }
+        informe["aspiraciones"] = aspiraciones_dict
         return informe
     else:
         st.error("No se encontró el informe.")

@@ -19,6 +19,7 @@ lang = getLanguage(st.session_state.language)
 idiomas= data_base.getIdiomas(st.session_state.language)
 idiomaNiveles=data_base.getIdiomaNiveles(st.session_state.language)
 nivelesCompetencias=data_base.getNivelesCompetencias(st.session_state.language)
+aspiraciones=data_base.getAspiraciones(st.session_state.language)
 st.markdown(
     f"<h2 style='text-align: center;'>{lang['titleInterview']}</h2>",
     unsafe_allow_html=True
@@ -28,6 +29,9 @@ if 'informe' not in st.session_state:
     st.session_state.informe = {}
     st.session_state.informe["idiomas"] = []
     st.session_state.informe["competencias"] = {}
+    st.session_state.informe["fortalezas"] = {}
+    st.session_state.informe["areaDesarrollo"] = {}
+    st.session_state.informe["aspiraciones"] = {}
 if "informe_cargado" not in st.session_state:
     st.session_state.informe_cargado = False
 evaluados=data_base.getEvaluadosConsultora(consultoraId)
@@ -55,22 +59,21 @@ if not st.session_state.informe_cargado:
         st.session_state.informe = {}
         st.session_state.informe["idiomas"] = []
         st.session_state.informe["competencias"] = {}
-
+        st.session_state.informe["fortalezas"] = {}
+        st.session_state.informe["areaDesarrollo"] = {}
+        st.session_state.informe["aspiraciones"] = {}
 st.session_state.informe['evaluado'] = evaluado_objeto
 st.session_state.informe['updated_date'] = datetime.today().strftime('%d/%m/%Y')
-
 #informe container
+st.subheader(lang["InverviewTitlePerfilProfesional"])
 formacionAcademicaContainer = st.container(key='formacionAcademicaContainer')
 languagesContainer = st.container(key='languagesContainer')
 experienciaProfesionalContainer = st.container(key='experienciaProfesionalContainer')
-competenciasContainer = st.container(key="competenciaContainer")
-capacidadPotencialActualContainer = st.container(key='capacidadPotencialActualContainer')
-capacidadPotencialFuturaContainer = st.container(key='capacidadPotencialFuturaContainer')
-balanceEmocionalContainer = st.container(key='balanceEmocionalContainer')
-conclusionesContainer = st.container(key='conclusionesContainer')
-recomendacionesContainer = st.container(key='recomendacionesContainer')
-propuestaDesarrolloContainer = st.container(key='propuestaDesarrolloContainer')
 
+st.subheader(lang["InterviewValoracionCompentencias"])
+competenciasContainer = st.container(key="competenciaContainer")
+fortalezasAreasDesarrollo = st.container(key="fortalezasContainer")
+areasDesarrollo = st.container(key="areasContainer")
 
 with formacionAcademicaContainer:
     with st.expander(lang["InterviewFormacionAcademicaText"]):
@@ -132,14 +135,154 @@ with competenciasContainer:
         nivelCompetencia = st.selectbox(lang["SelectValue"], competenciasNombres)
         datos_previos = st.session_state.informe['competencias'].get(competenciaNombre, {})
         comentario_default = datos_previos.get('comentario', "")
-        comentario = st.text_area(lang["Comment"])
+        comentario = st.text_area(lang["Comment"], value=comentario_default)
         nivelSeleccionado = next((e for e in nivelesCompetencias if e['nombre'] == nivelCompetencia), None)
-        st.session_state.informe['competencias'][competenciaNombre] = {
+        if st.button(lang["AddButton"]):
+            if competenciaNombre and nivelSeleccionado:
+                st.session_state.informe["competencias"][competenciaNombre] = {
                     'competencia': competenciaNombre,
                     'valoracion': nivelCompetencia,
                     'comentario': comentario,
                     'nivelId': nivelSeleccionado["id"]
                 }
+        st.write(lang["InverviewCompetenceAdded"])
+        competencias = list(st.session_state.informe["competencias"].items())
+
+        if competencias:
+            tab_labels = [nombre for nombre, _ in competencias]
+            tabs = st.tabs(tab_labels)
+            competencia_eliminada = None
+
+            for (nombre, datos), tab in zip(competencias, tabs):
+                with tab:
+                    st.write(lang["Comment"], datos['comentario'])
+                    if st.button(lang["DeleteButton"], key=f"delete_{nombre}"):
+                        competencia_eliminada = nombre
+
+            if competencia_eliminada:
+                del st.session_state.informe["competencias"][competencia_eliminada]
+                st.rerun()
+        else:
+            st.info(lang["NoDataYet"])
+with fortalezasAreasDesarrollo:
+    with st.expander(lang["InterviewFortalezayAreasDesarrollo"]):
+        fortalezaNombre = st.text_input(lang["InverviewCompetenceAdd"], key="fortalezaNombreText")
+        datosPreviosFort = st.session_state.informe['fortalezas'].get(fortalezaNombre, {})
+        comentarioFortDefault = datosPreviosFort.get('comentario', "")
+        comentarioFort = st.text_area(lang["Comment"], value=comentarioFortDefault, key="fortalezaCommentText")
+        if st.button(lang["AddButton"],key="addFortaleza"):
+            if fortalezaNombre:
+                st.session_state.informe["fortalezas"][fortalezaNombre] = {
+                    'nombreFortaleza': fortalezaNombre,
+                    'comentario': comentarioFort,
+                }
+        st.write(lang["InverviewFortalezaAdded"])
+        fortalezas = list(st.session_state.informe["fortalezas"].items())
+
+        if fortalezas:
+            tab_labels = [nombre for nombre, _ in fortalezas]
+            tabs = st.tabs(tab_labels)
+            fortaleza_eliminada = None
+
+            for (nombre, datos), tab in zip(fortalezas, tabs):
+                with tab:
+                    st.write(lang["Comment"], datos['comentario'])
+                    if st.button(lang["DeleteButton"], key=f"delete_fort_{nombre}"):
+                        fortaleza_eliminada = nombre
+
+            if fortaleza_eliminada:
+                del st.session_state.informe["fortalezas"][fortaleza_eliminada]
+                st.rerun()
+        else:
+            st.info(lang["NoDataYet"])
+with areasDesarrollo:
+    with st.expander(lang["InterviewAreaTitle"]):
+        areaNombre = st.text_input(lang["InverviewCompetenceAdd"], key="areaNombreText")
+        datosPreviosArea = st.session_state.informe['areaDesarrollo'].get(areaNombre, {})
+        comentarioAreaDefault = datosPreviosArea.get('comentario', "")
+        comentarioArea= st.text_area(lang["Comment"], value=comentarioAreaDefault, key="areaCommentText")
+        if st.button(lang["AddButton"],key="addArea"):
+            if areaNombre:
+                st.session_state.informe["areaDesarrollo"][areaNombre] = {
+                    'nombreArea': areaNombre,
+                    'comentario': comentarioArea,
+                }
+        st.write(lang["InverviewAreasAdded"])
+        
+        areaDesarrollo = list(st.session_state.informe["areaDesarrollo"].items())
+        if areaDesarrollo:
+            tab_labels = [nombre for nombre, _ in areaDesarrollo]
+            tabs = st.tabs(tab_labels)
+            area_eliminada = None
+
+            for (nombre, datos), tab in zip(areaDesarrollo, tabs):
+                with tab:
+                    st.write(lang["Comment"], datos['comentario'])
+                    if st.button(lang["DeleteButton"], key=f"delete_area_{nombre}"):
+                        area_eliminada = nombre
+
+            if area_eliminada:
+                del st.session_state.informe["areaDesarrollo"][area_eliminada]
+                st.rerun()
+        else:
+            st.info(lang["NoDataYet"])
+
+st.subheader(lang["InterviewBalanceEmocional"])
+balanceEmocionalContainer = st.container(key='balanceEmocionalContainer')
+st.subheader(lang["InterviewMotivacionIntereses"])
+motivacionesContainer = st.container(key='motivacionesContainers')
+with motivacionesContainer:
+    with st.expander(lang["InterviewMotivacionesSubtitle"]):
+        nombresAspiraciones = [e['nombre'] for e in aspiraciones]
+        aspiracionesSelected=st.selectbox(lang["InterviewMotivacionesSubtitle"],nombresAspiraciones)
+        motivacionBreveDescripcion = st.text_input(lang["InterviewBreveDescripcion"],key="motivacionBreveDescripcion")
+        motivacionDescripcion = st.text_area(lang["Comment"],key="motivacionDescripcion")
+        aspiracion_objeto = next((e for e in aspiraciones if e['nombre'] == aspiracionesSelected), None)
+        if st.button(lang["AddButton"],key="addMotivation"):
+                if aspiracionesSelected:
+                    st.session_state.informe["aspiraciones"][aspiracionesSelected] = {
+                        'aspiracionId': aspiracion_objeto["id"],
+                        'breveDescripcion': motivacionBreveDescripcion,
+                        'comentario': motivacionDescripcion
+                    }
+        st.write(lang["InverviewMotivacionAdded"])
+        aspiraciones = list(st.session_state.informe["aspiraciones"].items())
+        if aspiraciones:
+            tab_labels = [nombre for nombre, _ in aspiraciones]
+            tabs = st.tabs(tab_labels)
+            aspiraciones_eliminada = None
+            for (nombre, datos), tab in zip(aspiraciones, tabs):
+                with tab:
+                    st.write(lang["InterviewBreveDescripcion"], datos['breveDescripcion'])
+                    st.write(lang["Comment"], datos['comentario'])
+                    if st.button(lang["DeleteButton"], key=f"delete_mot_{nombre}"):
+                        aspiraciones_eliminada = nombre
+
+            if aspiraciones_eliminada:
+                del st.session_state.informe["aspiraciones"][aspiraciones_eliminada]
+                st.rerun()
+        else:
+            st.info(lang["NoDataYet"])
+    with st.expander(lang["InterviewDisponibildadGeografica"]):
+        disponibilidadSelected=st.selectbox("",lang["InterviewDisponibilidadList"])
+        dispBreveDescripcion = st.text_input(lang["InterviewBreveDescripcion"], value=st.session_state.informe.get("breveDescripcionDisponibilidad", ""),key="dispBreveDescripcion")
+        dispDescripcion = st.text_area(lang["Comment"], value=st.session_state.informe.get("disponibilidadComment", ""),key="dispDescripcion")
+        st.session_state.informe["disponibilidad"] = disponibilidadSelected
+        st.session_state.informe["breveDescripcion"] = dispBreveDescripcion
+        st.session_state.informe["disponibilidadComment"] = dispDescripcion
+
+st.subheader(lang["InterviewEvaluacionPotencial"])
+graficoProgresoContainer = st.container(key='graficoProgresoContainer')
+with graficoProgresoContainer:
+    with st.expander(lang["InterviewGraficoProgreso"]):
+        cpa5 = st.selectbox(lang["InterviewCPA5Title"],lang["InterviewCPA"],key="cpa5Selector")
+        st.session_state.informe['cpa5']= cpa5
+        cpa10 = st.selectbox(lang["InterviewCPA10Title"],lang["InterviewCPA"],key="cpa10Selector")
+        st.session_state.informe['cpa10']= cpa10
+        modo = st.selectbox(lang["InterviewModoTitle"],lang["InterviewModo"],key="modoSelector")
+        st.session_state.informe['modo']= modo
+
+capacidadPotencialActualContainer = st.container(key='capacidadPotencialActualContainer')
 with capacidadPotencialActualContainer:
     with st.expander(lang["InterviewCapacidadPotencialActual"]):
         col1, col2, col3 = st.columns([2,3,2])
@@ -147,6 +290,7 @@ with capacidadPotencialActualContainer:
             st.subheader(lang["InterviewCapacidadPotencialActual"])
         capacidadPotencialActual = st.text_area("",value = st.session_state.informe.get("capacidadPotencialActual", ""),key="capacidadPotencialActualKey")
         st.session_state.informe['capacidadPotencialActual']= capacidadPotencialActual
+capacidadPotencialFuturaContainer = st.container(key='capacidadPotencialFuturaContainer')
 with capacidadPotencialFuturaContainer:
     with st.expander(lang["InterviewCapacidadPotencialFutura"]):
         col1, col2, col3 = st.columns([2,3,2])
@@ -154,6 +298,9 @@ with capacidadPotencialFuturaContainer:
             st.subheader(lang["InterviewCapacidadPotencialFutura"])
         capacidadPotencialFutura = st.text_area("",value = st.session_state.informe.get("capacidadPotencialFutura", ""),key="capacidadPotencialFuturaKey")
         st.session_state.informe['capacidadPotencialFutura']= capacidadPotencialFutura
+
+st.subheader(lang["InterviewConclusionesTitle"])
+conclusionesContainer = st.container(key='conclusionesContainer')
 with conclusionesContainer:
     with st.expander(lang["InterviewConclusiones"]):
         col1, col2, col3 = st.columns([2,3,2])
@@ -161,6 +308,10 @@ with conclusionesContainer:
             st.subheader(lang["InterviewConclusiones"])
         conclusiones = st.text_area("",value = st.session_state.informe.get("conclusiones", ""),key="conclusionesKey")
         st.session_state.informe['conclusiones']= conclusiones
+
+potencialNivel = st.selectbox(lang["InverviewPotencial"],lang["InterviewPotencialNivel"])
+st.session_state.informe['potencialNivel']= potencialNivel
+recomendacionesContainer = st.container(key='recomendacionesContainer')
 with recomendacionesContainer:
     with st.expander(lang["InterviewRecomendaciones"]):
         col1, col2, col3 = st.columns([2,3,2])
@@ -168,13 +319,13 @@ with recomendacionesContainer:
             st.subheader(lang["InterviewRecomendaciones"])
         recomendaciones = st.text_area("",value = st.session_state.informe.get("recomendaciones", ""),key="recomendacionesKey")
         st.session_state.informe['recomendaciones']= recomendaciones
+propuestaDesarrolloContainer = st.container(key='propuestaDesarrolloContainer')
 with propuestaDesarrolloContainer:
     with st.expander(lang["InterviewAccionesDesarrollo"]):
         col1, col2, col3 = st.columns([2,3,2])
         with col2:
             st.subheader(lang["InterviewAccionesDesarrollo"])
-        propuestas = st.text_area("",value = st.session_state.informe.get("propuestas", ""),key="propuestasKey")
-        st.session_state.informe['propuestas']= propuestas
-
+        propuestas = st.text_area("",value = st.session_state.informe.get("propuestasDesarrollo", ""),key="propuestasKey")
+        st.session_state.informe['propuestasDesarrollo']= propuestas
 if st.button(lang["InterviewSaveButton"]):
     data_base.saveInforme()

@@ -5,7 +5,13 @@ authTokenTable="auth_tokens"
 evaluadoTable="evaluado"
 informeTable="informe"
 idiomasTable="idiomas"
+aspiracionesTable="aspiraciones"
+informeAspiraciones="informeAspiraciones"
 idiomasNivelesTable="idiomaNivel"
 informeIdiomaNivelesTable="informeIdiomaNiveles"
 informeValoracionCompetencia="informeValoracionCompetencia"
+informeFortalezasTable="informeFortalezas"
+informeAreaDesarrollo="informeAreaDesarrollo"
 nivelesCompetenciasTable="nivelesCompetencias"
+
+
