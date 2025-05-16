@@ -306,13 +306,13 @@ def generarInformeCompleto(consultora_id, evaluado_id):
 
         aspiraciones_dict = {}
         for i in aspiraciones:
-            aspiracionNombre = getAspiracionesById(i["id"])
-            aspiraciones_dict[i["nombre"]] = {
-                "aspiracion": aspiracionNombre,
+            aspiracionNombre = getAspiracionesById(i["aspiracionesId"])
+            aspiraciones_dict[aspiracionNombre[0]["nombre"]] = {
+                "aspiracion": aspiracionNombre[0]["nombre"],
                 "comment": i["comment"],
                 "breveDescripcion": i["breveDescripcion"]
             }
-        informe["aspiraciones"] = aspiraciones_dict
+        informe["motivaciones"] = aspiraciones_dict
         return informe
     else:
         st.error("No se encontró el informe.")

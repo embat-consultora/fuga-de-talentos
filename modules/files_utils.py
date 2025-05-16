@@ -32,6 +32,9 @@ def generar_docx_con_datos(informe_data):
         "recomendaciones": informe_data["recomendaciones"],
         "propuestasDesarrollo": informe_data["propuestasDesarrollo"],
         "potencial": informe_data["potencial"],
+        "disponibilidad": informe_data["disponibilidad"],
+        "breveDescripcionDisponibilidad": informe_data["breveDescripcionDisponibilidad"],
+        "comment_disponibilidad": informe_data["disponibilidadComment"],
     }
     competencias_context = []
 
@@ -60,6 +63,16 @@ def generar_docx_con_datos(informe_data):
         })
 
     context["areaDesarrollo"] = areaDesarrollo_context
+
+    motivaciones_context = []
+    for nombre, datos in informe_data.get("motivaciones", {}).items():
+        motivaciones_context.append({
+            "aspiracion": nombre,
+            "comment": datos["comment"],
+            "breveDescripcion": datos["breveDescripcion"]
+        })
+
+    context["motivaciones"] = motivaciones_context
     doc.render(context)
     buffer = io.BytesIO()
     doc.save(buffer)
