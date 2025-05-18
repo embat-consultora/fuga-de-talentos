@@ -13,3 +13,4 @@ python-docx
 docxtpl 
 pdfkit
 matplotlib
+openai

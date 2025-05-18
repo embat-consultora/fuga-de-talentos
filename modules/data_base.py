@@ -53,8 +53,14 @@ def getIdiomaNivelesById(idiomaId):
 def getIdiomaById(idiomaId):
     response = supabase.table(tables.idiomasTable).select('idioma').eq('id', idiomaId).execute()
     return response.data
+def getTipoInformeById(tipoId):
+    response = supabase.table(tables.tipoInforme).select('tipoInforme').eq('id', tipoId).execute()
+    return response.data
 def getAspiraciones(value):
     response = supabase.table(tables.aspiracionesTable).select('nombre,id').eq('lang', value).execute()
+    return response.data
+def getTipoInforme():
+    response = supabase.table(tables.tipoInforme).select('tipoInforme,id').execute()
     return response.data
 def getAspiracionesById(compId):
     response = supabase.table(tables.aspiracionesTable).select('nombre').eq('id', compId).execute()
@@ -179,15 +185,14 @@ def saveInforme():
         "conclusiones": st.session_state.informe.get("conclusiones", ""),
         "recomendaciones": st.session_state.informe.get("recomendaciones", ""),
         "propuestasDesarrollo": st.session_state.informe.get("propuestasDesarrollo", ""),
-        "potencial": st.session_state.informe.get("potencialNivel", "")
-
+        "potencial": st.session_state.informe.get("potencialNivel", ""),
+        "tipoInformeId": st.session_state.get("tipoInformeId", "")
     }
     if existing and existing[0] and len(existing[0]) > 0:
         informe_id = existing[0]["id"]
         response = updateInforme(informe_id, dataInforme)
     else:
         response = createInforme(dataInforme)
-        st.write(response)
         informe_id =response[0]["id"]
     if response[0]:
         supabase.table(tables.informeIdiomaNivelesTable).delete().eq("evaluadoId", evaluado_id).execute()
@@ -269,6 +274,7 @@ def generarInformeCompleto(consultora_id, evaluado_id):
         informe["posicion"] = evaluado[0]["posicion"]
         informe["departamento"] = evaluado[0]["departamento"]
         informe["consultoraNombre"]= consultora[0]["name"]
+        informe["tipoInforme"]= getTipoInformeById(informe["tipoInformeId"])[0]["tipoInforme"]
         idioma_dict = {}
         for i in idiomas:
             idioma_nombre = getIdiomaById(i["idiomaId"])

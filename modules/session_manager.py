@@ -111,4 +111,5 @@ def loadInforme(informe):
             }
 
         st.session_state.informe["aspiraciones"] = aspiraciones_dict
-        st.session_state.informe_cargado = True
+        st.session_state.tipoInformeId = informe[0].get("tipoInformeId")
+        

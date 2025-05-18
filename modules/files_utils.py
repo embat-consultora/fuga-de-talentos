@@ -9,10 +9,13 @@ from docxtpl import DocxTemplate, InlineImage
 
 def generar_docx_con_datos(informe_data):
     base_path = os.path.dirname(os.path.abspath(__file__))
-    plantilla_path = os.path.join(base_path, "..", "template", "informeCompleto.docx")
+    nombreInforme = f"informe{informe_data["tipoInforme"]}.docx"
+    plantilla_path = os.path.join(base_path, "..", "template", nombreInforme)
     doc = DocxTemplate(plantilla_path)
-    grafico_idiomas = crear_grafico_idiomas(informe_data["idiomas"])
-    imagen = InlineImage(doc, grafico_idiomas, width=Mm(120))  # ajustar tamaño según plantilla
+    imagen = "" 
+    if informe_data["idiomas"]:
+        grafico_idiomas = crear_grafico_idiomas(informe_data["idiomas"])
+        imagen = InlineImage(doc, grafico_idiomas, width=Mm(120))  # ajustar tamaño según plantilla
 
     context = {
         "nombre": informe_data["evaluado"]["nombre"],
@@ -87,9 +90,11 @@ def generarInforme():
         )
     if informe:
         buffer = generar_docx_con_datos(informe)
+        nombre = informe['evaluado']['nombre'].strip().replace(" ", "_")
+        file_name = f"informe_{informe["tipoInforme"]}_{nombre}"
         st.download_button(
             label="Descargar informe DOCX",
             data=buffer,
-            file_name=f"informe_{informe['evaluado']['nombre']}.docx",
+            file_name=f"{file_name}.docx",
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )

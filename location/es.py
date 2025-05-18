@@ -32,6 +32,7 @@ texts = {
 ],
     "menuClientPlanning":"Planning",
     "InterviewDropdownText":"Persona a evaluar",
+    "InterviewTipoInforme":"Selecciona tipo informe",
     "InverviewTitlePerfilProfesional":"PERFIL PROFESIONAL",
     "InterviewValoracionCompentencias":"VALORACIÓN DE COMPETENCIAS",
     "InterviewEvaluacionPotencial":"EVALUACIÓN DE POTENCIAL",

@@ -8,10 +8,8 @@ def top_menu():
 
     idioma_actual = mapeo_idiomas.get(st.session_state.language, "Español")
     col1, col4, col2, col3 = st.columns([1, 5, 1,1]) 
-    if "is_logged_in" not in st.user:
-        st.user.is_logged_in = False 
-    # with col1:
-    #     st.image("images/logo.png", width=100)  # Cambia la ruta del logo
+    if "logged_in" not in st.session_state:
+        st.session_state.logged_in = False 
 
     with col2:
         seleccionado = st.selectbox(
@@ -28,7 +26,7 @@ def top_menu():
         with col3:
             st.text('')
             st.write('')
-            if hasattr(st, 'user') and st.user.is_logged_in:
+            if hasattr(st, 'user'):
                 st.text(st.user.name)
             elif 'logged_in' in st.session_state and st.session_state.logged_in is not None:
                 if st.session_state.logged_in:
