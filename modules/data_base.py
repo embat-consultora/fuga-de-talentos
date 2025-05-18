@@ -41,9 +41,11 @@ def getUserCompany(tableName, variable, value):
 def getEqual(tableName, variable, value):
     response = supabase.table(tableName).select('*').eq(variable, value).execute()
     return response.data
+@st.cache_data
 def getIdiomas(value):
     response = supabase.table(tables.idiomasTable).select('idioma, id').eq('lang', value).execute()
     return response.data
+@st.cache_data
 def getIdiomaNiveles(value):
     response = supabase.table(tables.idiomasNivelesTable).select('nombre, id').eq('lang', value).execute()
     return response.data
@@ -56,9 +58,11 @@ def getIdiomaById(idiomaId):
 def getTipoInformeById(tipoId):
     response = supabase.table(tables.tipoInforme).select('tipoInforme').eq('id', tipoId).execute()
     return response.data
+@st.cache_data
 def getAspiraciones(value):
     response = supabase.table(tables.aspiracionesTable).select('nombre,id').eq('lang', value).execute()
     return response.data
+@st.cache_data
 def getTipoInforme():
     response = supabase.table(tables.tipoInforme).select('tipoInforme,id').execute()
     return response.data
@@ -71,6 +75,7 @@ def addIdioma(data_idioma):
 def getInformeIdiomasByEvaluado(evaluado_id):
     response = supabase.table(tables.informeIdiomaNivelesTable).select("*").eq("evaluadoId", evaluado_id).execute()
     return response.data
+@st.cache_data
 def getNivelesCompetencias(value):
     response = supabase.table(tables.nivelesCompetenciasTable).select('nombre,order, id').eq('lang', value).execute()
     return response.data
