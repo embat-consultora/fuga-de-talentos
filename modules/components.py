@@ -26,7 +26,7 @@ def top_menu():
         with col3:
             st.text('')
             st.write('')
-            if hasattr(st, 'user'):
+            if st.user.is_logged_in:
                 st.text(st.user.name)
             elif 'logged_in' in st.session_state and st.session_state.logged_in is not None:
                 if st.session_state.logged_in:

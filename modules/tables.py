@@ -14,5 +14,7 @@ informeValoracionCompetencia="informeValoracionCompetencia"
 informeFortalezasTable="informeFortalezas"
 informeAreaDesarrollo="informeAreaDesarrollo"
 nivelesCompetenciasTable="nivelesCompetencias"
+competenciasTable="competencias"
+competenciasCompany="competenciaCompany"
 
 

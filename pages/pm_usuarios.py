@@ -6,6 +6,7 @@ from modules.session_manager import is_logged,validate_get_user
 from modules.utils import getLanguage
 import string
 from variables import languages, roles
+from modules import tables
 import pandas as pd
 from modules.page_utils import apply_page_config
 from modules.components import top_menu
@@ -21,8 +22,8 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-usuarios = get("users") or []
-companias = get("company") or []
+usuarios = get(tables.usersTable) or []
+companias = get(tables.companyTable) or []
 
 # Diccionario: id → nombre de la compañía
 companias_dict = {c["id"]: c["nombre"] for c in companias if "id" in c and "nombre" in c}

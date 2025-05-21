@@ -22,9 +22,9 @@ def load_user(email):
         st.session_state.username = user["name"]
         st.session_state.userId = user["id"]
         st.session_state.role = user["roles"]["rol"]
-        st.session_state.companyId = user["company"]["id"]
-        st.session_state.company = user["company"]["nombre"]
-        st.session_state.projectStartDate = user["company"]["project_start_date"]
+        st.session_state.companyId = user["company"]["id"] if user["company"] and "id" in user["company"] else None
+        st.session_state.company = user["company"]["nombre"] if user["company"] and "nombre" in user["company"] else None
+        st.session_state.projectStartDate = user["company"]["project_start_date"] if user["company"] and "project_start_date" in user["company"] else None
         st.session_state.language = user["language"]
         st.session_state.logged_in = True
         return True

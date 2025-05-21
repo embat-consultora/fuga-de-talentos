@@ -85,6 +85,14 @@ def getNivelesCompetenciaById(compId):
 def addCompetenciaInforme(data_comp):
     response = supabase.table(tables.informeValoracionCompetencia).insert(data_comp).execute()
     return response.data
+def addCompetencias(data_comp):
+    response = supabase.table(tables.competenciasTable) \
+        .upsert(data_comp, on_conflict=["nombre"]) \
+        .execute()
+    return response.data
+def addCompetenciasCompany(data_comp):
+    response = supabase.table(tables.competenciasCompany).insert(data_comp).execute()
+    return response.data
 def addFortalezaInforme(data_comp):
     response = supabase.table(tables.informeFortalezasTable).insert(data_comp).execute()
     return response.data

@@ -1,11 +1,12 @@
 import streamlit as st
-from modules.data_base import get, addCompany, updateCompanyEstado
+from modules.data_base import get, addCompany, updateCompanyEstado, addCompetencias, addCompetenciasCompany
 from modules.utils import getLanguage
 import pandas as pd
 from modules.page_utils import apply_page_config
 from modules.navigation import render_menu
 from modules.session_manager import is_logged,validate_get_user
 from modules.components import top_menu
+from modules import tables
 st.session_state["current_page"] = "pm_clientes"
 apply_page_config()
 top_menu()
@@ -19,7 +20,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-companies = get("company") or []
+companies = get(tables.companyTable) or []
+competencias = get(tables.competenciasTable) or []
+competenciaXcompany = get(tables.competenciasCompany) or []
+
 # Obtener estados únicos y agregar opción "Todos"
 estados_disponibles = sorted(set(c["estado"] for c in companies if "estado" in c))
 estados_disponibles.insert(0, "Todos")
@@ -56,47 +60,78 @@ if not df_companias.empty:
 else:
     st.info("No se encontraron compañías con esos filtros.")
 
-# ------------------ FORMULARIO CREAR NUEVA COMPAÑÍA ------------------
+with st.expander("🏢 Nueva compañía"):
+    col1, col2 = st.columns(2)
+    nombre = col1.text_input("Nombre de la compañía")
+    telefono = col2.text_input("Teléfono")
+    col3, col4 = st.columns(2)
+    email_contacto = col3.text_input("Email de contacto")
+    estado = col4.selectbox("Estado", ["Activo", "Inactivo"])
 
-st.subheader("🏢 Nueva compañía")
+    if st.button("Crear compañía"):
+        if nombre and telefono and email_contacto:
+            data = {
+                "nombre": nombre,
+                "telefono": telefono,
+                "emailContacto": email_contacto,
+                "estado": estado
+            }
 
-col1, col2 = st.columns(2)
-nombre = col1.text_input("Nombre de la compañía")
-telefono = col2.text_input("Teléfono")
-col3, col4 = st.columns(2)
-email_contacto = col3.text_input("Email de contacto")
-estado = col4.selectbox("Estado", ["Activo", "Inactivo"])
+            try:
+                addCompany(data)
+                st.success(f"Compañía '{nombre}' creada correctamente.")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Ocurrió un error al guardar la compañía: {e}")
+        else:
+            st.warning("Por favor completá todos los campos.")
 
-if st.button("Crear compañía"):
-    if nombre and telefono and email_contacto:
-        data = {
-            "nombre": nombre,
-            "telefono": telefono,
-            "emailContacto": email_contacto,
-            "estado": estado
-        }
+with st.expander("Agregar competencias a compañía"):
+    company_names = [c["nombre"] for c in companies]
+    selected_company = st.selectbox("Seleccionar compañía", company_names, key="companySelector")
+    companySelected = next((e for e in companies if e['nombre'] == selected_company), None)
 
+    st.write("Seleccioná competencias para asignar:")
+    selected_to_add = []
+
+    if competencias:
+        for comp in competencias:
+            already_assigned = any(
+                rel["companyId"] == companySelected["id"] and rel["competenciaId"] == comp["id"]
+                for rel in competenciaXcompany
+            )
+
+            if st.checkbox(comp["nombre"], value=already_assigned, key=f"{companySelected['id']}_{comp['id']}"):
+                data_comp_comp = {
+                "competenciaId": comp['id'],
+                "companyId": companySelected['id']
+            }
+                datac= addCompetenciasCompany(data_comp_comp)
+                if datac:
+                    st.toast("Competencia asignada")
+    else:
+        st.info("No hay competencias disponibles.")
+
+    new_comp = st.text_input("No esta la competencia que buscas? Agregala")
+    if st.button("Agregar competencia(s)"):
+        data_comp = {
+                "nombre":new_comp
+            }
+        data = addCompetencias(data_comp)
+        if data:
+            st.toast("Competencia agregada")
+
+
+
+with st.expander("🔄 Cambiar estado de una compañía"):
+    company_names = [c["nombre"] for c in companies]
+    selected_company = st.selectbox("Seleccionar compañía", company_names)
+    nuevo_estado = st.selectbox("Nuevo estado", ["Activo", "Inactivo"])
+
+    if st.button("Actualizar estado"):
         try:
-            addCompany(data)
-            st.success(f"Compañía '{nombre}' creada correctamente.")
+            updateCompanyEstado(selected_company, nuevo_estado)
+            st.success(f"Estado de '{selected_company}' actualizado a {nuevo_estado}.")
             st.rerun()
         except Exception as e:
-            st.error(f"Ocurrió un error al guardar la compañía: {e}")
-    else:
-        st.warning("Por favor completá todos los campos.")
-
-# ------------------ CAMBIAR ESTADO DE UNA COMPAÑÍA ------------------
-
-st.subheader("🔄 Cambiar estado de una compañía")
-
-company_names = [c["nombre"] for c in companies]
-selected_company = st.selectbox("Seleccionar compañía", company_names)
-nuevo_estado = st.selectbox("Nuevo estado", ["Activo", "Inactivo"])
-
-if st.button("Actualizar estado"):
-    try:
-        updateCompanyEstado(selected_company, nuevo_estado)
-        st.success(f"Estado de '{selected_company}' actualizado a {nuevo_estado}.")
-        st.rerun()
-    except Exception as e:
-        st.error(f"No se pudo actualizar el estado: {e}")
+            st.error(f"No se pudo actualizar el estado: {e}")
