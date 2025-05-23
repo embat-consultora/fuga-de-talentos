@@ -33,9 +33,10 @@ def render_menu(role):
                 if st.button(lang['logoutButton']):
                     st.logout()
             if(role=="pm"):
-                st.page_link("pages/pm_datos_preliminares.py", label=lang['titlePreliminarData'])
+                #st.page_link("pages/pm_datos_preliminares.py", label=lang['titlePreliminarData'])
                 st.page_link("pages/pm_usuarios.py", label=lang['titleUsers'])
-                st.page_link("pages/pm_clientes.py", label=lang['titleClients'])
+                #st.page_link("pages/pm_clientes.py", label=lang['titleClients'])
+                st.page_link("pages/pm_evaluados.py", label=lang['titleEvaluados'])
                 st.write("")
                 st.write("")
 

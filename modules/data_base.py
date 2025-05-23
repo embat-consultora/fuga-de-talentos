@@ -12,10 +12,20 @@ def get(tableName):
     response = supabase.table(tableName).select('*').execute()
     return response.data
 
+def getRoles():
+    response = supabase.table(tables.rolesTable).select('*').execute()
+    return response.data
 def addUser(user_data):
     response = supabase.table(tables.usersTable).insert(user_data).execute()
     return response
 
+def addEvaluado(data):
+    response = supabase.table(tables.evaluadoTable).insert(data).execute()
+    return response
+
+def updateEvaluado(evaluado_id, consultora_id):
+    response = supabase.table(tables.evaluadoTable).update({"consultora": consultora_id}).eq("id", evaluado_id).execute()
+    return response
 def getUserRolAndCompany(tableName, variable, value):
     response = (
         supabase

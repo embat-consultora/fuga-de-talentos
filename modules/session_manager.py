@@ -19,7 +19,7 @@ def load_user(email):
     response = getUserRolAndCompany("users", "email", email)
     if response:
         user = response[0]
-        st.session_state.username = user["name"]
+        st.session_state.username = user["nombre"]
         st.session_state.userId = user["id"]
         st.session_state.role = user["roles"]["rol"]
         st.session_state.companyId = user["company"]["id"] if user["company"] and "id" in user["company"] else None

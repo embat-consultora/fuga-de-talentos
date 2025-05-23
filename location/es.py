@@ -15,6 +15,7 @@ texts = {
     "titleRegisterUser":"📋 Usuarios registrados",
     "titleUsers":"Usuarios",
     "titleClients":"Clientes",
+    "titleEvaluados":"Evaluados",
     "titleCalendar":"Agenda",
     "titleInterview":"Entrevista",
     "titlePreliminarData":"Datos Preliminares",

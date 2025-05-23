@@ -16,5 +16,5 @@ informeAreaDesarrollo="informeAreaDesarrollo"
 nivelesCompetenciasTable="nivelesCompetencias"
 competenciasTable="competencias"
 competenciasCompany="competenciaCompany"
-
+rolesTable="roles"
 
