@@ -116,13 +116,12 @@ if uploaded_file is not None:
             if response.data != None :
                 st.success("Datos importados exitosamente.")
                 st.rerun()
-            else:
-                if(response.data.code=='23505'):
-                    st.error("Estas intentando agregar emails que ya existen. Eliminalos del csv e intenta nuevamente")
-                
 
     except Exception as e:
-        st.error(f"Error al leer el archivo: {e}")
+        if(e.code=='23505'):
+            st.error("Estas intentando agregar emails que ya existen. Eliminalos del csv e intenta nuevamente")
+        else:
+            st.error(f"Error al leer el archivo: {e}")
 
 
 
