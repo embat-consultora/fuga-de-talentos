@@ -39,7 +39,7 @@ if "informe_cargado" not in st.session_state:
     st.session_state.informe_cargado = False
 
 evaluados=data_base.getEvaluadosConsultora(consultoraId)
-st.write(st.session_state.userId)
+
 if not evaluados:
     st.info("No tenés evaluados asignados por el momento.")
 else:
