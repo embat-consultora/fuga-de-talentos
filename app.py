@@ -37,3 +37,13 @@ for a in t['homeTestimonial']:
     with st.expander(a['name']):
         st.write(a['testimonial'])
 
+
+
+st.markdown("""
+<hr style="margin-top: 50px;"/>
+<div style='text-align: center; padding: 10px; font-size: 0.9em; color: gray;'>
+    © 2025 P+Data · 
+    <a href="https://p-data.streamlit.app/privacy" target="_blank">Privacy Policy</a> · 
+    <a href="https://p-data.streamlit.app/terms" target="_blank">Terms & Conditions</a>
+</div>
+""", unsafe_allow_html=True)
