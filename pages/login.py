@@ -25,26 +25,10 @@ if st.session_state.get("logged_in"):
 islogged =validate_get_user()
 if islogged:
     redirect_by_role()
-# 💻 Login tradicional
-username = st.text_input(t["username"], placeholder="Ingrese email")
-password = st.text_input(t["password"], type="password", placeholder="Ingrese contraseña")
-st.markdown(
-    f'<div style="text-align: right;"><a href="mailto:support@embatconsultora.com">{t["forgotPassword"]}</a></div>',
-    unsafe_allow_html=True
-)
-if st.button(t["loginButton"], type="primary"):
-    response = getEqual("users", "email", username)
-    if response:
-        user = response[0]
-        if user["password"] == password:
-            load_user(user["email"])
-            st.rerun()
-        else:
-            st.error(t["IncorrectPassword"])
-    else:
-        st.error(t["IncorrectPassword"])
 
-st.write('')
-if st.button("Iniciar sesión con Google"):
-    st.login("google")
+st.subheader('')
+col1,col2,col3 = st.columns(3)
+with col2:
+    if st.button("Iniciar sesión con Google"):
+        st.login("google")
  

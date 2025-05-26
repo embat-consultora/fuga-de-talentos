@@ -38,6 +38,8 @@ def generar_docx_con_datos(informe_data):
         "disponibilidad": informe_data["disponibilidad"],
         "breveDescripcionDisponibilidad": informe_data["breveDescripcionDisponibilidad"],
         "comment_disponibilidad": informe_data["disponibilidadComment"],
+        "balanceNivel": informe_data["balanceNivel"],
+        "balanceDescripcion": informe_data["balanceDescripcion"],
     }
     competencias_context = []
 

@@ -209,6 +209,8 @@ def saveInforme():
         "recomendaciones": st.session_state.informe.get("recomendaciones", ""),
         "propuestasDesarrollo": st.session_state.informe.get("propuestasDesarrollo", ""),
         "potencial": st.session_state.informe.get("potencialNivel", ""),
+        "balanceNivel": st.session_state.informe.get("balanceNivel", ""),
+        "balanceDescripcion": st.session_state.informe.get("balanceDescripcion", ""),
         "tipoInformeId": st.session_state.get("tipoInformeId", "")
     }
     if existing and existing[0] and len(existing[0]) > 0:
@@ -296,7 +298,7 @@ def generarInformeCompleto(consultora_id, evaluado_id):
         consultora = getUserById(consultora_id)
         informe["posicion"] = evaluado[0]["posicion"]
         informe["departamento"] = evaluado[0]["departamento"]
-        informe["consultoraNombre"]= consultora[0]["name"]
+        informe["consultoraNombre"]= consultora[0]["nombre"]
         informe["tipoInforme"]= getTipoInformeById(informe["tipoInformeId"])[0]["tipoInforme"]
         idioma_dict = {}
         for i in idiomas:

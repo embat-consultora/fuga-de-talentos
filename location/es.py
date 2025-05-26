@@ -38,6 +38,8 @@ texts = {
     "InterviewValoracionCompentencias":"VALORACIÓN DE COMPETENCIAS",
     "InterviewEvaluacionPotencial":"EVALUACIÓN DE POTENCIAL",
     "InterviewBalanceEmocional":"BALANCE EMOCIONAL",
+    "InterviewComportamientoDisfuncional":"Comportamiento Disfuncional",
+    "InterviewBalanceNivel":["🟠 Si","🟢 No"],
     "InterviewMotivacionIntereses":"MOTIVACIONES E INTERESES",
     "InterviewMotivacionesSubtitle":"Aspiración de Crecimiento",
     "InterviewDisponibildadGeografica":"Disponibilidad geográfica",

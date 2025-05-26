@@ -305,7 +305,14 @@ else:
                 st.session_state.informe['capacidadPotencialFutura']= capacidadPotencialFutura
     if mostrar_balance_emocional:
         st.subheader(lang["InterviewBalanceEmocional"])
-        balanceEmocionalContainer = st.container(key='balanceEmocionalContainer')
+        with st.expander(lang["InterviewComportamientoDisfuncional"]):
+            balanceEmocionalContainer = st.container(key='balanceEmocionalContainer')
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                balanceNivel = st.selectbox('',lang["InterviewBalanceNivel"],key="balanceNivelOptions")
+            balanceDescripcion = st.text_area(lang["Comment"],key="balanceDescription")
+            st.session_state.informe["balanceNivel"] = balanceNivel
+            st.session_state.informe["balanceDescripcion"] = balanceDescripcion
     if mostrar_motivaciones_intereses:
         st.subheader(lang["InterviewMotivacionIntereses"])
         motivacionesContainer = st.container(key='motivacionesContainers')
