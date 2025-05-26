@@ -1,6 +1,6 @@
 phasesTable = "project_phases"
 companyTable ="company"
-usersTable="users"
+usersTable="users1"
 authTokenTable="auth_tokens"
 evaluadoTable="evaluado"
 informeTable="informe"
