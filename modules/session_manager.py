@@ -16,7 +16,7 @@ def redirect_by_role():
         st.error("Rol no reconocido.")
 
 def load_user(email):
-    response = getUserRolAndCompany("users", "email", email)
+    response = getUserRolAndCompany("email", email)
     if response:
         user = response[0]
         st.session_state.username = user["nombre"]

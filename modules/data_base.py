@@ -26,10 +26,10 @@ def addEvaluado(data):
 def updateEvaluado(evaluado_id, consultora_id):
     response = supabase.table(tables.evaluadoTable).update({"consultora": consultora_id}).eq("id", evaluado_id).execute()
     return response
-def getUserRolAndCompany(tableName, variable, value):
+def getUserRolAndCompany( variable, value):
     response = (
         supabase
-        .table(tableName)
+        .table(tables.usersTable)
         .select("*, roles(rol), company(id,nombre,project_start_date)")
         .eq(variable, value)
         .execute()
