@@ -112,4 +112,6 @@ def loadInforme(informe):
 
         st.session_state.informe["aspiraciones"] = aspiraciones_dict
         st.session_state.tipoInformeId = informe[0].get("tipoInformeId")
+        st.session_state.informe["balanceNivel"] =  informe[0].get("balanceNivel")
+        st.session_state.informe["balanceDescripcion"] =  informe[0].get("balanceDescripcion")
         

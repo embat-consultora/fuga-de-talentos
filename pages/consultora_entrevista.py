@@ -309,8 +309,10 @@ else:
             balanceEmocionalContainer = st.container(key='balanceEmocionalContainer')
             col1, col2, col3 = st.columns(3)
             with col1:
-                balanceNivel = st.selectbox('',lang["InterviewBalanceNivel"],key="balanceNivelOptions")
-            balanceDescripcion = st.text_area(lang["Comment"],key="balanceDescription")
+                valor_actual = st.session_state.informe.get("balanceNivel", lang["InterviewBalanceNivel"][0])
+                indice_actual = lang["InterviewBalanceNivel"].index(valor_actual) if valor_actual in lang["InterviewBalanceNivel"] else 0
+                balanceNivel = st.selectbox('',lang["InterviewBalanceNivel"],index=indice_actual,key="balanceNivelOptions")
+            balanceDescripcion = st.text_area(lang["Comment"],key="balanceDescription", value=st.session_state.informe.get("balanceDescripcion", ""))
             st.session_state.informe["balanceNivel"] = balanceNivel
             st.session_state.informe["balanceDescripcion"] = balanceDescripcion
     if mostrar_motivaciones_intereses:
