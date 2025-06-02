@@ -373,7 +373,8 @@ else:
                 conclusiones = st.text_area("",value = st.session_state.informe.get("conclusiones", ""),key="conclusionesKey")
                 st.session_state.informe['conclusiones']= conclusiones
 
-        potencialNivel = st.selectbox(lang["InverviewPotencial"],lang["InterviewPotencialNivel"])
+        potencialNivel = st.selectbox(lang["InverviewPotencial"], lang["InterviewPotencialNivel"], index=lang["InterviewPotencialNivel"].index(st.session_state.informe.get("potencial", lang["InterviewPotencialNivel"][0])))
+
         st.session_state.informe['potencialNivel']= potencialNivel
         recomendacionesContainer = st.container(key='recomendacionesContainer')
         with recomendacionesContainer:
