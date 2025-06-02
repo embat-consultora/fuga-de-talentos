@@ -30,7 +30,6 @@ st.markdown(
 )
 consultoraId=st.session_state.userId
 if 'informe' not in st.session_state:
-    st.write('paso por aca primer')
     st.session_state.informe = {}
     st.session_state.informe["idiomas"] = []
     st.session_state.informe["competencias"] = {}
