@@ -20,6 +20,8 @@ lang = getLanguage(st.session_state.language)
 idiomas= data_base.getIdiomas(st.session_state.language)
 idiomaNiveles=data_base.getIdiomaNiveles(st.session_state.language)
 nivelesCompetencias=data_base.getNivelesCompetencias(st.session_state.language)
+competenciasDB=data_base.getCompetencias()
+competenciasNom = [e['nombre'] for e in competenciasDB]
 aspiraciones=data_base.getAspiraciones(st.session_state.language)
 tiposInformes=data_base.getTipoInforme()
 st.markdown(
@@ -28,6 +30,7 @@ st.markdown(
 )
 consultoraId=st.session_state.userId
 if 'informe' not in st.session_state:
+    st.write('paso por aca primer')
     st.session_state.informe = {}
     st.session_state.informe["idiomas"] = []
     st.session_state.informe["competencias"] = {}
@@ -58,31 +61,33 @@ else:
     if "evaluado_actual_id" not in st.session_state or st.session_state.evaluado_actual_id != evaluado_objeto["id"]:
         st.session_state.evaluado_actual_id = evaluado_objeto["id"]
         st.session_state.informe_cargado = False
-        st.session_state.informe = {
-            "idiomas": [],
-            "competencias": {},
-            "fortalezas": {},
-            "areaDesarrollo": {},
-            "aspiraciones": {},
-        }
+        if not st.session_state.get("informe"):
+            st.session_state.informe = {
+                "idiomas": [],
+                "competencias": {},
+                "fortalezas": {},
+                "areaDesarrollo": {},
+                "aspiraciones": {},
+            }
     if not st.session_state.informe_cargado:
         informe = data_base.getCompleteInforme(consultoraId,evaluado_objeto["id"])
         if informe:
             loadInforme(informe)
+            st.session_state.informe_cargado = True
             if "tipoInformeId" in informe:
                 tipo_encontrado = next((t for t in tiposInformes if t["id"] == informe["tipoInformeId"]), None)
                 if tipo_encontrado:
                     st.session_state.tipoInformeId = tipo_encontrado["id"]
                     st.session_state.tipoInforme_seleccionado = tipo_encontrado["tipoInforme"]
-        else:
-            if not st.session_state.informe_cargado:
-                if "informe" not in st.session_state or not st.session_state.informe:
-                    st.session_state.informe = {}
-                    st.session_state.informe["idiomas"] = []
-                    st.session_state.informe["competencias"] = {}
-                    st.session_state.informe["fortalezas"] = {}
-                    st.session_state.informe["areaDesarrollo"] = {}
-                    st.session_state.informe["aspiraciones"] = {}
+        elif "informe" not in st.session_state:
+            st.session_state.informe = {
+                "idiomas": [],
+                "competencias": {},
+                "fortalezas": {},
+                "areaDesarrollo": {},
+                "aspiraciones": {},
+            }
+            st.session_state.informe_cargado = True
 
     st.session_state.informe['evaluado'] = evaluado_objeto
     st.session_state.informe['updated_date'] = datetime.today().strftime('%d/%m/%Y')
@@ -180,11 +185,9 @@ else:
     with competenciasContainer:
         competenciasNombres = [e['nombre'] for e in nivelesCompetencias]
         with st.expander(lang["InverviewCompetenceTitle"]):
-            competenciaNombre = st.text_input(lang["InverviewCompetenceAdd"])
+            competenciaNombre = st.selectbox(lang["SelectValue"], competenciasNom, key="competenciasDropdown")
             nivelCompetencia = st.selectbox(lang["SelectValue"], competenciasNombres)
-            datos_previos = st.session_state.informe['competencias'].get(competenciaNombre, {})
-            comentario_default = datos_previos.get('comentario', "")
-            comentario = st.text_area(lang["Comment"], value=comentario_default)
+            comentario = st.text_area(lang["Comment"])
             nivelSeleccionado = next((e for e in nivelesCompetencias if e['nombre'] == nivelCompetencia), None)
             if st.button(lang["AddButton"]):
                 if competenciaNombre and nivelSeleccionado:
@@ -194,9 +197,11 @@ else:
                         'comentario': comentario,
                         'nivelId': nivelSeleccionado["id"]
                     }
+
             st.write(lang["InverviewCompetenceAdded"])
             competencias = list(st.session_state.informe["competencias"].items())
-
+            datos_previos = st.session_state.informe['competencias'].get(competenciaNombre, {})
+            comentario_default = datos_previos.get('comentario', "")
             if competencias:
                 tab_labels = [nombre for nombre, _ in competencias]
                 tabs = st.tabs(tab_labels)
@@ -215,7 +220,7 @@ else:
                 st.info(lang["NoDataYet"])
     with fortalezasAreasDesarrollo:
         with st.expander(lang["InterviewFortalezayAreasDesarrollo"]):
-            fortalezaNombre = st.text_input(lang["InverviewCompetenceAdd"], key="fortalezaNombreText")
+            fortalezaNombre =  st.selectbox(lang["SelectValue"], competenciasNom, key="fortalezaNombreText")
             datosPreviosFort = st.session_state.informe['fortalezas'].get(fortalezaNombre, {})
             comentarioFortDefault = datosPreviosFort.get('comentario', "")
             comentarioFort = st.text_area(lang["Comment"], value=comentarioFortDefault, key="fortalezaCommentText")
@@ -244,9 +249,10 @@ else:
                     st.rerun()
             else:
                 st.info(lang["NoDataYet"])
+
     with areasDesarrollo:
         with st.expander(lang["InterviewAreaTitle"]):
-            areaNombre = st.text_input(lang["InverviewCompetenceAdd"], key="areaNombreText")
+            areaNombre =  st.selectbox(lang["SelectValue"], competenciasNom, key="areaNombreText")
             datosPreviosArea = st.session_state.informe['areaDesarrollo'].get(areaNombre, {})
             comentarioAreaDefault = datosPreviosArea.get('comentario', "")
             comentarioArea= st.text_area(lang["Comment"], value=comentarioAreaDefault, key="areaCommentText")

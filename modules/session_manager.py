@@ -92,7 +92,7 @@ def loadInforme(informe):
         
         st.session_state.informe["areaDesarrollo"] = {}
         area_dict = {}
-        for item in informe[0].get("areaDesarrollo", []):
+        for item in informe[0].get("informeAreaDesarrollo", []):
             nombre_area = item.get("nombre", "")
             area_dict[nombre_area] = {
                 "nombreArea": nombre_area,

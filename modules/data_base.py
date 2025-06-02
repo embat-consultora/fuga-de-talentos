@@ -92,6 +92,9 @@ def getNivelesCompetencias(value):
 def getNivelesCompetenciaById(compId):
     response = supabase.table(tables.nivelesCompetenciasTable).select('nombre').eq('id', compId).execute()
     return response.data
+def getCompetencias():
+    response = supabase.table(tables.competenciasTable).select('nombre').execute()
+    return response.data
 def addCompetenciaInforme(data_comp):
     response = supabase.table(tables.informeValoracionCompetencia).insert(data_comp).execute()
     return response.data
@@ -176,6 +179,9 @@ def getCompleteInforme(consultoraId, evaluadoId):
         informeAspiraciones (
             comment,breveDescripcion,
             aspiraciones(nombre,id)
+        ),
+        informeAreaDesarrollo (
+            nombre,id, comment
         )
         """
     ).eq("consultoraId", consultoraId).eq("evaluadoId", evaluadoId).execute()
