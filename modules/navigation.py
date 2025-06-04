@@ -50,6 +50,14 @@ def render_menu(role):
 
                 if st.button(lang['logoutButton']):
                     st.logout()
+            if(role=="embatAdmin"):
+                st.page_link("pages/consultora_calendar.py", label=lang['titleCalendar'])
+                st.page_link("pages/consultora_entrevista.py", label=lang['titleInterview'])
+                st.write("")
+                st.write("")
+
+                if st.button(lang['logoutButton']):
+                    st.logout()
             if(role=="cliente"):
                 st.page_link("pages/cliente_planning.py", label=lang['menuClientPlanning'])
                 st.write("")

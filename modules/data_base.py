@@ -155,6 +155,12 @@ def getPhases():
 def getEvaluadosConsultora(consultoraId):
     response = supabase.table(tables.evaluadoTable).select('*,company(nombre)').eq("consultora", consultoraId).execute()
     return response.data
+def getEvaluadosWithInformes():
+    response = supabase.table(tables.evaluadoTable).select('*,informe(*)').execute()
+    evaluados = response.data
+    evaluados_con_informe = [e for e in evaluados if e.get("informe")]
+    return evaluados_con_informe
+
 def getEvaluadoById(evaluadoId):
     response = supabase.table(tables.evaluadoTable).select('*').eq("id", evaluadoId).execute()
     return response.data
@@ -186,13 +192,51 @@ def getCompleteInforme(consultoraId, evaluadoId):
         """
     ).eq("consultoraId", consultoraId).eq("evaluadoId", evaluadoId).execute()
     return response.data
+
+def getCompleteInformeSinConsultora(evaluadoId):
+    response = supabase.table(tables.informeTable).select(
+        """
+        *,
+        informeIdiomaNiveles (
+            idiomas (id,idioma),
+            idiomaNivel (id, nombre)
+        ),
+        informeValoracionCompetencia (
+            texto, competenciaNombre,
+            nivelId: nivelesCompetencias (nombre, id)
+        ),
+        informeFortalezas (
+            nombre,id, comment
+        ),
+        informeAspiraciones (
+            comment,breveDescripcion,
+            aspiraciones(nombre,id)
+        ),
+        informeAreaDesarrollo (
+            nombre,id, comment
+        )
+        """
+    ).eq("evaluadoId", evaluadoId).execute()
+    return response.data
 def createInforme(dataInforme):
     response = supabase.table(tables.informeTable).insert(dataInforme).execute()
     return response.data
 def updateInforme(informeId,dataInforme):
     response = supabase.table(tables.informeTable).update(dataInforme).eq("id", informeId).execute()
     return response.data
+def getEvaluadosPorRol(rol, consultoraId=None):
+    if rol == "consultora":
+        return getEvaluadosConsultora(consultoraId)
+    elif rol == "embatAdmin":
+        return getEvaluadosWithInformes()
+    return []
 
+def getEvaluadosInformePorRol(rol, evaluadoId, consultoraId=None):
+    if rol == "consultora":
+        return getCompleteInforme(consultoraId,evaluadoId)
+    elif rol == "embatAdmin":
+        return getCompleteInformeSinConsultora(evaluadoId)
+    return []
 def saveInforme():
     consultora_id = st.session_state.get("userId")
     evaluado_id = st.session_state.informe["evaluado"]["id"]

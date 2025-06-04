@@ -15,7 +15,7 @@ top_menu()
 is_logged()
 validate_get_user()
 render_menu(st.session_state.role)
-
+rol= st.session_state.role
 lang = getLanguage(st.session_state.language)
 idiomas= data_base.getIdiomas(st.session_state.language)
 idiomaNiveles=data_base.getIdiomaNiveles(st.session_state.language)
@@ -39,6 +39,7 @@ if 'informe' not in st.session_state:
     st.session_state.tipoInformeId = 1
 if "informe_cargado" not in st.session_state:
     st.session_state.informe_cargado = False
+
 
 evaluados=data_base.getEvaluadosConsultora(consultoraId)
 
@@ -199,8 +200,6 @@ else:
 
             st.write(lang["InverviewCompetenceAdded"])
             competencias = list(st.session_state.informe["competencias"].items())
-            datos_previos = st.session_state.informe['competencias'].get(competenciaNombre, {})
-            comentario_default = datos_previos.get('comentario', "")
             if competencias:
                 tab_labels = [nombre for nombre, _ in competencias]
                 tabs = st.tabs(tab_labels)
@@ -208,15 +207,43 @@ else:
 
                 for (nombre, datos), tab in zip(competencias, tabs):
                     with tab:
-                        st.write(lang["Comment"], datos['comentario'])
-                        if st.button(lang["DeleteButton"], key=f"delete_{nombre}"):
-                            competencia_eliminada = nombre
+                        # Inputs editables pre-cargados
+                        new_valoracion = st.selectbox(
+                            lang["InterviewNivelCompetence"],
+                            competenciasNombres,
+                            index=competenciasNombres.index(datos['valoracion']),
+                            key=f"edit_valoracion_{nombre}"
+                        )
+                        new_comentario = st.text_area(
+                            lang["Comment"],
+                            value=datos['comentario'],
+                            key=f"edit_comentario_{nombre}"
+                        )
+
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            if st.button(lang["SaveButton"], key=f"save_{nombre}"):
+                                nivelNuevo = next((e for e in nivelesCompetencias if e['nombre'] == new_valoracion), None)
+                                if nivelNuevo:
+                                    st.session_state.informe["competencias"][nombre] = {
+                                        'competencia': nombre,
+                                        'valoracion': new_valoracion,
+                                        'comentario': new_comentario,
+                                        'nivelId': nivelNuevo["id"]
+                                    }
+                                    st.success(lang["dataSavedCorrectlyMessage"])
+                                    st.rerun()
+
+                        with col2:
+                            if st.button(lang["DeleteButton"], key=f"delete_{nombre}"):
+                                competencia_eliminada = nombre
 
                 if competencia_eliminada:
                     del st.session_state.informe["competencias"][competencia_eliminada]
                     st.rerun()
             else:
                 st.info(lang["NoDataYet"])
+
     with fortalezasAreasDesarrollo:
         with st.expander(lang["InterviewFortalezayAreasDesarrollo"]):
             fortalezaNombre =  st.selectbox(lang["SelectValue"], competenciasNom, key="fortalezaNombreText")
