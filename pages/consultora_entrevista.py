@@ -41,7 +41,7 @@ if "informe_cargado" not in st.session_state:
     st.session_state.informe_cargado = False
 
 
-evaluados=data_base.getEvaluadosConsultora(consultoraId)
+evaluados= data_base.getEvaluadosPorRol(rol, consultoraId)
 
 if not evaluados:
     st.info("No tenés evaluados asignados por el momento.")
@@ -70,7 +70,7 @@ else:
                 "aspiraciones": {},
             }
     if not st.session_state.informe_cargado:
-        informe = data_base.getCompleteInforme(consultoraId,evaluado_objeto["id"])
+        informe = data_base.getEvaluadosInformePorRol(rol,evaluado_objeto["id"],consultoraId)
         if informe:
             loadInforme(informe)
             st.session_state.informe_cargado = True

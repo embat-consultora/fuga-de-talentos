@@ -5,4 +5,4 @@ languages=["es", "en", "pt"]
 idiomas = ["Español", "Inglés", "Portugués"]
 mapeo_idiomas = {"es": "Español", "en": "Inglés", "pt": "Portugués"}
 page_icon="images/logo.png"
-roles=["admin", "pm", "consultora","cliente","evaluado","especialista"]
+roles=["admin", "pm", "consultora","cliente","evaluado","especialista","embatAdmin"]

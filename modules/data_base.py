@@ -15,6 +15,15 @@ def get(tableName):
 def getRoles():
     response = supabase.table(tables.rolesTable).select('*').execute()
     return response.data
+
+from enum import Enum
+
+def getRolesEnum():
+    roles = supabase.table(tables.rolesTable).select('*').execute().data
+    enum_dict = {r["rol"].upper(): r["rol"] for r in roles}
+    RolesEnum = Enum("RolesEnum", enum_dict)
+    return RolesEnum
+
 def addUser(user_data):
     response = supabase.table(tables.usersTable).insert(user_data).execute()
     return response
@@ -225,20 +234,22 @@ def updateInforme(informeId,dataInforme):
     response = supabase.table(tables.informeTable).update(dataInforme).eq("id", informeId).execute()
     return response.data
 def getEvaluadosPorRol(rol, consultoraId=None):
-    if rol == "consultora":
+    RolesEnum = getRolesEnum()
+    if rol == RolesEnum.CONSULTORA.value:
         return getEvaluadosConsultora(consultoraId)
-    elif rol == "embatAdmin":
+    elif rol == RolesEnum.EMBATADMIN.value:
         return getEvaluadosWithInformes()
     return []
 
 def getEvaluadosInformePorRol(rol, evaluadoId, consultoraId=None):
-    if rol == "consultora":
+    RolesEnum = getRolesEnum()
+    if rol == RolesEnum.CONSULTORA.value:
         return getCompleteInforme(consultoraId,evaluadoId)
-    elif rol == "embatAdmin":
+    elif rol == RolesEnum.EMBATADMIN.value:
         return getCompleteInformeSinConsultora(evaluadoId)
     return []
 def saveInforme():
-    consultora_id = st.session_state.get("userId")
+    consultora_id = st.session_state.informe["consultoraId"]
     evaluado_id = st.session_state.informe["evaluado"]["id"]
     existing = getInforme(consultora_id, evaluado_id)
     dataInforme = {

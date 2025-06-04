@@ -7,7 +7,8 @@ def redirect_by_role():
         "psicologo": "pages/dashboard_psicologos.py",
         "pm": "pages/pm_usuarios.py",
         "consultora": "pages/consultora_calendar.py",
-        "cliente": "pages/cliente_planning.py"
+        "cliente": "pages/cliente_planning.py",
+        "embatAdmin": "pages/consultora_entrevista.py"
     }
     rol = st.session_state.get("role")
     if rol in rutas:
@@ -68,7 +69,6 @@ def loadInforme(informe):
                 "nivel_id": nivel.get("id")
             })
         st.session_state.informe["idiomas"] = idiomasInforme
-
         competencias_dict = {}
         for item in informe[0].get("informeValoracionCompetencia", []):
             nombre_comp = item.get("competenciaNombre", "")
