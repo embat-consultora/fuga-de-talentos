@@ -134,7 +134,7 @@ if st.button("Crear usuario"):
         }
 
         try:
-            addUser(user_data)
+            response = addUser(user_data)
             if response.data != None :
                 st.success("Datos importados exitosamente.")
                 st.rerun()
