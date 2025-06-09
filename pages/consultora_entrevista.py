@@ -37,6 +37,7 @@ if 'informe' not in st.session_state:
     st.session_state.informe["areaDesarrollo"] = {}
     st.session_state.informe["aspiraciones"] = {}
     st.session_state.tipoInformeId = 1
+    st.session_state.informe['consultoraId'] = consultoraId
 if "informe_cargado" not in st.session_state:
     st.session_state.informe_cargado = False
 
@@ -88,7 +89,6 @@ else:
                 "aspiraciones": {},
             }
             st.session_state.informe_cargado = True
-
     st.session_state.informe['evaluado'] = evaluado_objeto
     st.session_state.informe['updated_date'] = datetime.today().strftime('%d/%m/%Y')
     nombreInformes = [e['tipoInforme'] for e in tiposInformes]
