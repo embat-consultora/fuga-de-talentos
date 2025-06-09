@@ -249,7 +249,9 @@ def getEvaluadosInformePorRol(rol, evaluadoId, consultoraId=None):
         return getCompleteInformeSinConsultora(evaluadoId)
     return []
 def saveInforme():
-    consultora_id = st.session_state.informe["consultoraId"]
+    st.write(st.session_state.informe)
+    informe = st.session_state.get("informe", {})  # devuelve {} si no existe
+    consultora_id = informe.get("consultoraId") or 1
     evaluado_id = st.session_state.informe["evaluado"]["id"]
     existing = getInforme(consultora_id, evaluado_id)
     dataInforme = {
