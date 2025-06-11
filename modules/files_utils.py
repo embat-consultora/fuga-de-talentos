@@ -87,7 +87,7 @@ def generar_docx_con_datos(informe_data):
 
 def generarInforme():
     informe = generarInformeCompleto(
-            st.session_state["userId"],
+            st.session_state.informe["consultoraId"],
             st.session_state.informe["evaluado"]["id"]
         )
     if informe:
