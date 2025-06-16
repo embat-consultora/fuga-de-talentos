@@ -70,7 +70,7 @@ else:
                 "areaDesarrollo": {},
                 "aspiraciones": {},
             }
-    if not st.session_state.informe_cargado:
+    if not st.session_state.informe_cargado or st.session_state.informe_cargado == False: 
         informe = data_base.getEvaluadosInformePorRol(rol,evaluado_objeto["id"],consultoraId)
         if informe:
             loadInforme(informe)
@@ -80,7 +80,7 @@ else:
                 if tipo_encontrado:
                     st.session_state.tipoInformeId = tipo_encontrado["id"]
                     st.session_state.tipoInforme_seleccionado = tipo_encontrado["tipoInforme"]
-        elif "informe" not in st.session_state:
+        elif "informe" not in st.session_state or informe == []:
             st.session_state.informe = {
                 "idiomas": [],
                 "competencias": {},
@@ -119,6 +119,7 @@ else:
     mostrar_conclusion= tipo in ["Potencial", "Competencias"]
     mostrar_perfil_profesional= tipo in ["Potencial", "Competencias"]
     #informe container
+
     if mostrar_perfil_profesional:
         st.subheader(lang["InverviewTitlePerfilProfesional"])
         formacionAcademicaContainer = st.container(key='formacionAcademicaContainer')
