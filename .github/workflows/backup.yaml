@@ -1,4 +1,4 @@
-name: supabase-backup
+name: Supabase Schema Backup
 
 on:
   schedule:
@@ -6,45 +6,43 @@ on:
   workflow_dispatch:
 
 jobs:
-  run_db_backup:
+  backup:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write  # Needed to push to the repo
 
     env:
       SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
-      BACKUP_ENABLED: ${{ vars.BACKUP_ENABLED }} # Set this repo variable to true/false
+      BACKUP_ENABLED: ${{ vars.BACKUP_ENABLED }}
 
     steps:
       - name: Check if backups are enabled
         run: |
           if [ "$BACKUP_ENABLED" != "true" ]; then
-            echo "Backups are disabled. Exiting workflow."
+            echo "🛑 Backups are disabled. Set BACKUP_ENABLED=true to enable backups."
             exit 0
           fi
 
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest  # or pin a specific version for stability
 
-      - name: Dump Supabase database
+      - name: Create backup directory
+        run: mkdir -p dumps
+
+      - name: Dump Supabase schema to SQL file
         run: |
-          mkdir -p backups
-          # Extract PGPASSWORD and reconstruct connection string without password
-          export PGUSER=$(echo $SUPABASE_DB_URL | sed -E 's|postgres://([^:]+):.*@.*|\1|')
-          export PGHOST=$(echo $SUPABASE_DB_URL | sed -E 's|.*@([^:/]+).*|\1|')
-          export PGPORT=$(echo $SUPABASE_DB_URL | sed -E 's|.*:([0-9]+)/.*|\1|')
-          export PGDATABASE=$(echo $SUPABASE_DB_URL | sed -E 's|.*/([^?]+).*|\1|')
-          export PGPASSWORD=$(echo $SUPABASE_DB_URL | sed -E 's|.*:([^@]+)@.*|\1|')
+          TIMESTAMP=$(date +'%Y-%m-%d')
+          supabase db dump --db-url "$SUPABASE_DB_URL" > "dumps/backup_$TIMESTAMP.sql"
 
-          pg_dump -h $PGHOST -U $PGUSER -p $PGPORT -d $PGDATABASE -F c -f backups/supabase_backup_$(date +'%Y-%m-%d').dump
-
-      - name: Commit backup
+      - name: Commit and push backup
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add backups/
-          git commit -m "Backup on $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git add dumps/
+          git commit -m "📦 Supabase schema backup on $(date +'%Y-%m-%d')" || echo "No changes to commit"
           git push
