@@ -96,10 +96,10 @@ def getInformeIdiomasByEvaluado(evaluado_id):
     return response.data
 @st.cache_data
 def getNivelesCompetencias(value):
-    response = supabase.table(tables.nivelesCompetenciasTable).select('nombre,order, id').eq('lang', value).execute()
+    response = supabase.table(tables.nivelesCompetenciasTable).select('nombre,order, id, ponderacion').eq('lang', value).execute()
     return response.data
 def getNivelesCompetenciaById(compId):
-    response = supabase.table(tables.nivelesCompetenciasTable).select('nombre').eq('id', compId).execute()
+    response = supabase.table(tables.nivelesCompetenciasTable).select('nombre, ponderacion').eq('id', compId).execute()
     return response.data
 def getCompetencias():
     response = supabase.table(tables.competenciasTable).select('nombre').execute()
@@ -186,7 +186,7 @@ def getCompleteInforme(consultoraId, evaluadoId):
         ),
         informeValoracionCompetencia (
             texto, competenciaNombre,
-            nivelId: nivelesCompetencias (nombre, id)
+            nivelId: nivelesCompetencias (nombre, id,ponderacion)
         ),
         informeFortalezas (
             nombre,id, comment
@@ -212,7 +212,7 @@ def getCompleteInformeSinConsultora(evaluadoId):
         ),
         informeValoracionCompetencia (
             texto, competenciaNombre,
-            nivelId: nivelesCompetencias (nombre, id)
+            nivelId: nivelesCompetencias (nombre, id,ponderacion)
         ),
         informeFortalezas (
             nombre,id, comment
@@ -250,7 +250,11 @@ def getEvaluadosInformePorRol(rol, evaluadoId, consultoraId=None):
     return []
 def saveInforme():
     informe = st.session_state.get("informe", {})  # devuelve {} si no existe
-    consultora_id = informe.get("consultoraId") or 1 
+    consultora_id = (
+        informe['consultoraId']
+        if informe.get('consultoraId') is not None and informe.get('consultoraId') != st.session_state["userId"]
+        else st.session_state["userId"]
+    )
     evaluado_id = st.session_state.informe["evaluado"]["id"]
     existing = getInforme(consultora_id, evaluado_id)
     dataInforme = {
@@ -373,11 +377,12 @@ def generarInformeCompleto(consultora_id, evaluado_id):
         informe["idiomas"] = idioma_dict
         compentencias_dict = {}
         for i in compentencias:
-            nivelCompetencia = getNivelesCompetenciaById(i["nivelId"])
+            nivelCompetencia, ponderacionNivel = getNivelesCompetenciaById(i["nivelId"])
             compentencias_dict[i["competenciaNombre"]] = {
                 "competenciaNombre": i["competenciaNombre"],
                 "nivelId": nivelCompetencia,
-                "comment": i["texto"]
+                "comment": i["texto"],
+                "ponderacion":ponderacionNivel
             }
         informe["competencias"] = compentencias_dict
 

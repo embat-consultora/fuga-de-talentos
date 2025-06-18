@@ -3,7 +3,7 @@ import io
 import os
 from modules.data_base import generarInformeCompleto
 import streamlit as st
-from modules.graph_utils import crear_grafico_idiomas
+from modules.graph_utils import  generar_grafico_radar,generar_barras_idiomas
 from docx.shared import Mm
 from docxtpl import DocxTemplate, InlineImage
 
@@ -13,10 +13,10 @@ def generar_docx_con_datos(informe_data):
     plantilla_path = os.path.join(base_path, "..", "template", nombreInforme)
     doc = DocxTemplate(plantilla_path)
     imagen = "" 
+    grafico_radar = "" 
     if informe_data["idiomas"]:
-        grafico_idiomas = crear_grafico_idiomas(informe_data["idiomas"])
+        grafico_idiomas = generar_barras_idiomas(informe_data["idiomas"])
         imagen = InlineImage(doc, grafico_idiomas, width=Mm(120))  # ajustar tamaño según plantilla
-
     context = {
         "nombre": informe_data["evaluado"]["nombre"],
         "posicion": informe_data["posicion"],
@@ -47,11 +47,18 @@ def generar_docx_con_datos(informe_data):
         competencias_context.append({
             "competenciaNombre": datos["competenciaNombre"],
             "valor": datos["nivelId"][0]["nombre"],
-            "comment": datos["comment"]
+            "comment": datos["comment"],
+            "ponderacion": datos["nivelId"][0]["ponderacion"],
         })
 
     context["competencias"] = competencias_context
-    
+    if context["competencias"]:
+         valores = {
+                "2024": [5, 4, 4, 3, 3, 4],
+                "2022": [4, 3, 3, 2, 3, 3]
+            }
+         grafico_radar = generar_grafico_radar(context["competencias"],valores)
+         context["radar"] = grafico_radar
     fortaleza_context = []
     for nombre, datos in informe_data.get("fortalezas", {}).items():
         fortaleza_context.append({

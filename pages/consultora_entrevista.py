@@ -198,7 +198,6 @@ else:
                         'comentario': comentario,
                         'nivelId': nivelSeleccionado["id"]
                     }
-
             st.write(lang["InverviewCompetenceAdded"])
             competencias = list(st.session_state.informe["competencias"].items())
             if competencias:

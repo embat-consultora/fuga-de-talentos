@@ -76,7 +76,8 @@ def loadInforme(informe):
                 "competencia": nombre_comp,
                 "valoracion": item.get("nivelId", {}).get("nombre", ""),
                 "comentario": item.get("texto", ""),
-                "nivelId": item.get("nivelId", {}).get("id")
+                "nivelId": item.get("nivelId", {}).get("id"),
+                "ponderacion": item.get("nivelId", {}).get("ponderacion"),
             }
         st.session_state.informe["competencias"] = competencias_dict
         
