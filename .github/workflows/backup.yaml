@@ -1,4 +1,4 @@
-name: Supabase Schema Backup
+name: Supabase Full Logical Backup
 
 on:
   schedule:
@@ -9,7 +9,7 @@ jobs:
   backup:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Needed to push to the repo
+      contents: write
 
     env:
       SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
@@ -29,20 +29,25 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest  # or pin a specific version for stability
+          version: latest
 
       - name: Create backup directory
-        run: mkdir -p dumps
+        run: mkdir -p backups
 
-      - name: Dump Supabase schema to SQL file
+      - name: Dump schema
         run: |
           TIMESTAMP=$(date +'%Y-%m-%d')
-          supabase db dump --db-url "$SUPABASE_DB_URL" > "dumps/backup_$TIMESTAMP.sql"
+          supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/schema_$TIMESTAMP.sql
+
+      - name: Dump data
+        run: |
+          TIMESTAMP=$(date +'%Y-%m-%d')
+          supabase db dump --db-url "$SUPABASE_DB_URL" --data-only --use-copy -f backups/data_$TIMESTAMP.sql
 
       - name: Commit and push backup
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add dumps/
-          git commit -m "📦 Supabase schema backup on $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git add backups/
+          git commit -m "📦 Supabase schema + data backup on $(date +'%Y-%m-%d')" || echo "Nothing to commit"
           git push
