@@ -1,0 +1,50 @@
+name: supabase-backup
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # Every day at midnight UTC
+  workflow_dispatch:
+
+jobs:
+  run_db_backup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BACKUP_ENABLED: ${{ vars.BACKUP_ENABLED }} # Set this repo variable to true/false
+
+    steps:
+      - name: Check if backups are enabled
+        run: |
+          if [ "$BACKUP_ENABLED" != "true" ]; then
+            echo "Backups are disabled. Exiting workflow."
+            exit 0
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Dump Supabase database
+        run: |
+          mkdir -p backups
+          # Extract PGPASSWORD and reconstruct connection string without password
+          export PGUSER=$(echo $SUPABASE_DB_URL | sed -E 's|postgres://([^:]+):.*@.*|\1|')
+          export PGHOST=$(echo $SUPABASE_DB_URL | sed -E 's|.*@([^:/]+).*|\1|')
+          export PGPORT=$(echo $SUPABASE_DB_URL | sed -E 's|.*:([0-9]+)/.*|\1|')
+          export PGDATABASE=$(echo $SUPABASE_DB_URL | sed -E 's|.*/([^?]+).*|\1|')
+          export PGPASSWORD=$(echo $SUPABASE_DB_URL | sed -E 's|.*:([^@]+)@.*|\1|')
+
+          pg_dump -h $PGHOST -U $PGUSER -p $PGPORT -d $PGDATABASE -F c -f backups/supabase_backup_$(date +'%Y-%m-%d').dump
+
+      - name: Commit backup
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add backups/
+          git commit -m "Backup on $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git push
