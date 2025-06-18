@@ -46,7 +46,7 @@ jobs:
             --db-url "$SUPABASE_DB_URL" \
             --data-only \
             --use-copy \
-            --exclude-table "auth_tokens" \
+            --exclude "auth_tokens" \
             -f backups/data_$TIMESTAMP.sql
 
       - name: Commit and push backup
