@@ -6,6 +6,7 @@ import streamlit as st
 from modules.graph_utils import  generar_grafico_radar,generar_barras_idiomas
 from docx.shared import Mm
 from docxtpl import DocxTemplate, InlineImage
+from datetime import datetime
 
 def generar_docx_con_datos(informe_data):
     base_path = os.path.dirname(os.path.abspath(__file__))
@@ -75,7 +76,7 @@ def generar_docx_con_datos(informe_data):
         })
 
     context["areaDesarrollo"] = areaDesarrollo_context
-
+    context["currentYear"] = datetime.now().year
     motivaciones_context = []
     for nombre, datos in informe_data.get("motivaciones", {}).items():
         motivaciones_context.append({
@@ -94,7 +95,7 @@ def generar_docx_con_datos(informe_data):
 
 def generarInforme():
     informe = generarInformeCompleto(
-            st.session_state.informe["consultoraId"],
+            st.session_state.informe["evaluado"]["consultora"],
             st.session_state.informe["evaluado"]["id"]
         )
     if informe:
