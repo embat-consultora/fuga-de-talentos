@@ -4,3 +4,4 @@
 __pycache__/
 location/__pycache__/
 .streamlit/secrets.toml
+backups
