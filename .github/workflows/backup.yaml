@@ -39,10 +39,15 @@ jobs:
           TIMESTAMP=$(date +'%Y-%m-%d')
           supabase db dump --db-url "$SUPABASE_DB_URL" -f backups/schema_$TIMESTAMP.sql
 
-      - name: Dump data
+      - name: Dump data (excluding sensitive tables)
         run: |
           TIMESTAMP=$(date +'%Y-%m-%d')
-          supabase db dump --db-url "$SUPABASE_DB_URL" --data-only --use-copy -f backups/data_$TIMESTAMP.sql
+          supabase db dump \
+            --db-url "$SUPABASE_DB_URL" \
+            --data-only \
+            --use-copy \
+            --exclude-table "auth_tokens" \
+            -f backups/data_$TIMESTAMP.sql
 
       - name: Commit and push backup
         run: |
