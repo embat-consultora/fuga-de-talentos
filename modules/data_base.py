@@ -164,11 +164,16 @@ def getPhases():
 def getEvaluadosConsultora(consultoraId):
     response = supabase.table(tables.evaluadoTable).select('*,company(nombre)').eq("consultora", consultoraId).execute()
     return response.data
-def getEvaluadosWithInformes():
+def getEvaluadosWithInformes(consultoraId):
     response = supabase.table(tables.evaluadoTable).select('*,informe(*)').execute()
     evaluados = response.data
-    evaluados_con_informe = [e for e in evaluados if e.get("informe")]
-    return evaluados_con_informe
+
+    evaluados_filtrados = [
+        e for e in evaluados
+        if e.get("consultora") == consultoraId or (e.get("informe") and len(e["informe"]) > 0)
+    ]
+
+    return evaluados_filtrados
 
 def getEvaluadoById(evaluadoId):
     response = supabase.table(tables.evaluadoTable).select('*').eq("id", evaluadoId).execute()
@@ -238,7 +243,7 @@ def getEvaluadosPorRol(rol, consultoraId=None):
     if rol == RolesEnum.CONSULTORA.value:
         return getEvaluadosConsultora(consultoraId)
     elif rol == RolesEnum.EMBATADMIN.value:
-        return getEvaluadosWithInformes()
+        return getEvaluadosWithInformes(consultoraId)
     return []
 
 def getEvaluadosInformePorRol(rol, evaluadoId, consultoraId=None):
@@ -377,7 +382,13 @@ def generarInformeCompleto(consultora_id, evaluado_id):
         informe["idiomas"] = idioma_dict
         compentencias_dict = {}
         for i in compentencias:
-            nivelCompetencia, ponderacionNivel = getNivelesCompetenciaById(i["nivelId"])
+            nivel_data = getNivelesCompetenciaById(i["nivelId"])
+            if nivel_data:
+                nivelCompetencia = nivel_data[0]["nombre"]
+                ponderacionNivel = nivel_data[0]["ponderacion"]
+            else:
+                nivelCompetencia = None
+                ponderacionNivel = None
             compentencias_dict[i["competenciaNombre"]] = {
                 "competenciaNombre": i["competenciaNombre"],
                 "nivelId": nivelCompetencia,

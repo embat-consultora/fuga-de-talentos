@@ -30,7 +30,7 @@ evaluados_dict = {c["id"]: c["nombre"] for c in evaluados if "id" in c and "nomb
 # Filtro de compañías
 nombres_companias = sorted(set(u["hotel"] for u in evaluados))
 nombres_companias.insert(0, "Todas")
-consultoras = [u for u in usuarios if u.get("rol") == 4]
+consultoras = [u for u in usuarios if u.get("rol") in [4, 5]]
 consultoras_dict = {f"{u['nombre']} ({u['email']})": u["id"] for u in consultoras}
 consultoras_nombre_por_id = {u["id"]: u["nombre"] for u in consultoras}
 col1, col2 = st.columns(2)

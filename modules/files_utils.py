@@ -47,9 +47,9 @@ def generar_docx_con_datos(informe_data):
     for nombre, datos in informe_data.get("competencias", {}).items():
         competencias_context.append({
             "competenciaNombre": datos["competenciaNombre"],
-            "valor": datos["nivelId"][0]["nombre"],
+            "valor": datos["nivelId"],
             "comment": datos["comment"],
-            "ponderacion": datos["nivelId"][0]["ponderacion"],
+            "ponderacion": datos["ponderacion"],
         })
 
     context["competencias"] = competencias_context
@@ -58,7 +58,7 @@ def generar_docx_con_datos(informe_data):
                 "2024": [5, 4, 4, 3, 3, 4],
                 "2022": [4, 3, 3, 2, 3, 3]
             }
-         grafico_radar = generar_grafico_radar(context["competencias"],valores)
+         #grafico_radar = generar_grafico_radar(context["competencias"],valores)
          context["radar"] = grafico_radar
     fortaleza_context = []
     for nombre, datos in informe_data.get("fortalezas", {}).items():

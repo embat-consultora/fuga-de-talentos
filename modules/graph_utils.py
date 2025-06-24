@@ -53,7 +53,7 @@ def generar_barras_idiomas(idiomas_data):
 
 def generar_grafico_radar(categorias, valores_dict):
     categorias_ext = categorias + [categorias[0]]
-    st.write(categorias_ext)
+
     angulos = np.linspace(0, 2 * np.pi, len(categorias_ext), endpoint=True)
 
     fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
@@ -63,8 +63,10 @@ def generar_grafico_radar(categorias, valores_dict):
 
     for i, (label, valores) in enumerate(valores_dict.items()):
         valores_ext = valores + [valores[0]]
-        ax.plot(angulos, valores_ext, label=label, linestyle=estilos[i % len(estilos)], color=colores[i % len(colores)])
-        ax.fill(angulos, valores_ext, alpha=0.1, color=colores[i % len(colores)])
+        angulos_ext = angulos + [angulos[0]] 
+        print(f"len(angulos_ext): {len(angulos_ext)}, len(valores_ext): {len(valores_ext)}")
+        ax.plot(angulos_ext, valores_ext, label=label, linestyle=estilos[i % len(estilos)], color=colores[i % len(colores)])
+        ax.fill(angulos_ext, valores_ext, alpha=0.1, color=colores[i % len(colores)])
 
     ax.set_xticks(angulos)
     ax.set_xticklabels(categorias_ext)
