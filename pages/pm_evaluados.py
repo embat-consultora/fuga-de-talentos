@@ -94,7 +94,6 @@ if uploaded_file is not None:
             "Fecha de entrada a la compania": "fecha_entrada",
             "Region": "region",
             "Evaluacion de desempeno 2024": "evaluacion_2024",
-            "ASISTENCIA": "cita_ok",
             "Pais": "pais"
         }
 

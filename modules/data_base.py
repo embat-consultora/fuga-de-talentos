@@ -393,7 +393,8 @@ def generarInformeCompleto(consultora_id, evaluado_id):
                 "competenciaNombre": i["competenciaNombre"],
                 "nivelId": nivelCompetencia,
                 "comment": i["texto"],
-                "ponderacion":ponderacionNivel
+                "ponderacion":ponderacionNivel,
+                "anio": i["anio"]
             }
         informe["competencias"] = compentencias_dict
 

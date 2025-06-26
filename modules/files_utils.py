@@ -50,16 +50,14 @@ def generar_docx_con_datos(informe_data):
             "valor": datos["nivelId"],
             "comment": datos["comment"],
             "ponderacion": datos["ponderacion"],
+            "anio": datos["anio"],
         })
 
     context["competencias"] = competencias_context
     if context["competencias"]:
-         valores = {
-                "2024": [5, 4, 4, 3, 3, 4],
-                "2022": [4, 3, 3, 2, 3, 3]
-            }
-         #grafico_radar = generar_grafico_radar(context["competencias"],valores)
-         context["radar"] = grafico_radar
+         grafico_radar = generar_grafico_radar(context["competencias"])
+         imagenRadar = InlineImage(doc, grafico_radar, width=Mm(120))
+         context["radar"] = imagenRadar
     fortaleza_context = []
     for nombre, datos in informe_data.get("fortalezas", {}).items():
         fortaleza_context.append({

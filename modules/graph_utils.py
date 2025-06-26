@@ -51,33 +51,42 @@ def generar_barras_idiomas(idiomas_data):
     return buffer
  
 
-def generar_grafico_radar(categorias, valores_dict):
-    categorias_ext = categorias + [categorias[0]]
+def generar_grafico_radar(categorias):
+       # Extraer nombres y ponderaciones
+    nombres = [c["competenciaNombre"] for c in categorias]
+    valores = [c["ponderacion"] for c in categorias]
+    anio = categorias[0].get("anio", "Evaluación")
+    # Cerrar el círculo
+    nombres_ext = nombres + [nombres[0]]
+    valores_ext = valores + [valores[0]]
 
-    angulos = np.linspace(0, 2 * np.pi, len(categorias_ext), endpoint=True)
+    # Calcular ángulos
+    angulos = np.linspace(0, 2 * np.pi, len(nombres_ext), endpoint=True)
 
+    # Crear gráfico
     fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
 
-    estilos = ['solid', 'dashed', 'dotted']
-    colores = ['navy', 'teal', 'darkorange']
+    # Graficar
+    ax.plot(angulos, valores_ext, label=anio, linestyle='solid', color='navy')
+    ax.fill(angulos, valores_ext, alpha=0.1, color='navy')
 
-    for i, (label, valores) in enumerate(valores_dict.items()):
-        valores_ext = valores + [valores[0]]
-        angulos_ext = angulos + [angulos[0]] 
-        print(f"len(angulos_ext): {len(angulos_ext)}, len(valores_ext): {len(valores_ext)}")
-        ax.plot(angulos_ext, valores_ext, label=label, linestyle=estilos[i % len(estilos)], color=colores[i % len(colores)])
-        ax.fill(angulos_ext, valores_ext, alpha=0.1, color=colores[i % len(colores)])
+    # Estética
+    ax.set_xticks(angulos[:-1])  # Sin el duplicado
+    ax.set_xticklabels(nombres)
 
-    ax.set_xticks(angulos)
-    ax.set_xticklabels(categorias_ext)
-    ax.set_yticklabels([])
+    ax.set_ylim(0, 5) 
+    ax.set_yticks([1, 2, 3, 4, 5])
+    ax.set_yticklabels(['1', '2', '3', '4', '5'], color='gray', size=8)
+
     ax.legend(loc='upper right', bbox_to_anchor=(1.1, 1.1))
 
-    # Guardar en archivo temporal
-    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".png")
+    # Guardar a buffer
+    buffer = io.BytesIO()
     plt.tight_layout()
-    plt.savefig(temp_file.name, format='png')
-    plt.close()
+    plt.savefig(buffer, format='png', bbox_inches='tight', transparent=True)
+    plt.close(fig)
+    buffer.seek(0)
 
-    return temp_file.name
+    return buffer
+ 
 
