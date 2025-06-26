@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 from modules.page_utils import apply_page_config
 from modules.components import top_menu
+import unicodedata
 st.session_state["current_page"] = "pm_usuarios"
 apply_page_config()
 top_menu()
@@ -30,6 +31,7 @@ evaluados_dict = {c["id"]: c["nombre"] for c in evaluados if "id" in c and "nomb
 nombres_companias = sorted(set(u["hotel"] for u in evaluados if u.get("hotel") is not None))
 nombres_companias.insert(0, "Todas")
 consultoras = [u for u in usuarios if u.get("rol") in [4, 5]]
+
 consultoras_dict = {f"{u['nombre']} ({u['email']})": u["id"] for u in consultoras}
 consultoras_nombre_por_id = {u["id"]: u["nombre"] for u in consultoras}
 col1, col2 = st.columns(2)
@@ -72,40 +74,41 @@ if uploaded_file is not None:
     try:
         
         df = pd.read_csv(uploaded_file)
-        df.rename(columns={
-        "ID empleado": "id_empleado",
-        "Nombre y Apellidos": "nombre",
-        "Correo electrónico ": "correo_electronico",
-        "Teléfono": "telefono",
-        "Hotel": "hotel",
-        "Departamento": "departamento",
-        "Posición": "posicion",
-        "Fecha de nacimiento": "fecha_nacimiento",
-        "Fecha de entrada a la compañía": "fecha_entrada",
-        "Región": "region",
-        "Evaluación de desempeño 2024": "evaluacion_2024",
-        "ASISTENCIA": "cita_ok",
-        "País":"pais"
-  
-     }, inplace=True)
+        # Normaliza nombres de columnas
+
+        df.columns = [
+            unicodedata.normalize('NFKD', col).encode('ascii', errors='ignore').decode('utf-8').strip()
+            for col in df.columns
+        ]
+
+        # Mapeo de columnas válidas
+        columnas_validas = {
+            "ID empleado": "id_empleado",
+            "Nombre y Apellidos": "nombre",
+            "Correo electronico": "correo_electronico",
+            "Telefono": "telefono",
+            "Hotel": "hotel",
+            "Departamento": "departamento",
+            "Posicion": "posicion",
+            "Fecha de nacimiento": "fecha_nacimiento",
+            "Fecha de entrada a la compania": "fecha_entrada",
+            "Region": "region",
+            "Evaluacion de desempeno 2024": "evaluacion_2024",
+            "ASISTENCIA": "cita_ok",
+            "Pais": "pais"
+        }
+
+        # Filtrar solo columnas válidas del CSV
+        df = df[[col for col in df.columns if col in columnas_validas]]
+
+        # Renombrar
+        df.rename(columns=columnas_validas, inplace=True)
 
         df.replace({np.nan: None}, inplace=True)
         # Convertir fechas al formato YYYY-MM-DD y NaN a None
         for col in ["fecha_nacimiento", "fecha_entrada"]:
             df[col] = pd.to_datetime(df[col], errors='coerce').dt.strftime('%Y-%m-%d')
         df = df.where(pd.notnull(df), None)
-
-        # Agregar columnas faltantes con valores por defecto
-        columnas_faltantes = {
-            "entrevista_ok": False,
-            "cancelacion_1": False,
-            "cancelacion_2": False,
-            "cv": False,
-            "bfq": False
-        }
-        for col, default in columnas_faltantes.items():
-                if col not in df.columns:
-                    df[col] = default
 
         st.write("Vista previa de los datos:")
         st.dataframe(df.head())
