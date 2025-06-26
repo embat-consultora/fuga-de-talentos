@@ -624,11 +624,6 @@ ALTER TABLE ONLY "public"."evaluado"
 
 
 ALTER TABLE ONLY "public"."evaluado"
-    ADD CONSTRAINT "evaluado_id_empleado_key" UNIQUE ("id_empleado");
-
-
-
-ALTER TABLE ONLY "public"."evaluado"
     ADD CONSTRAINT "evaluado_pkey" PRIMARY KEY ("id");
 
 
