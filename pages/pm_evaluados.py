@@ -26,9 +26,8 @@ evaluados = get(tables.evaluadoTable) or []
 
 # Diccionario: id → nombre de la compañía
 evaluados_dict = {c["id"]: c["nombre"] for c in evaluados if "id" in c and "nombre" in c}
-
 # Filtro de compañías
-nombres_companias = sorted(set(u["hotel"] for u in evaluados))
+nombres_companias = sorted(set(u["hotel"] for u in evaluados if u.get("hotel") is not None))
 nombres_companias.insert(0, "Todas")
 consultoras = [u for u in usuarios if u.get("rol") in [4, 5]]
 consultoras_dict = {f"{u['nombre']} ({u['email']})": u["id"] for u in consultoras}
@@ -40,7 +39,8 @@ filtro_email = col2.text_input("Emails")
 evaluados_filtrados = [
     u for u in evaluados
     if (filtro_compania == "Todas" or u["hotel"] == filtro_compania)
-    and (filtro_email.lower() in u["correo_electronico"].lower())
+    and (u.get("correo_electronico") or "").lower().find(filtro_email.lower()) != -1
+
 ]
 for u in evaluados_filtrados:
     consultora_id = u.get("consultora")
@@ -86,6 +86,7 @@ if uploaded_file is not None:
         "Evaluación de desempeño 2024": "evaluacion_2024",
         "ASISTENCIA": "cita_ok",
         "País":"pais"
+  
      }, inplace=True)
 
         df.replace({np.nan: None}, inplace=True)
@@ -96,7 +97,6 @@ if uploaded_file is not None:
 
         # Agregar columnas faltantes con valores por defecto
         columnas_faltantes = {
-            "evaluadora": None,
             "entrevista_ok": False,
             "cancelacion_1": False,
             "cancelacion_2": False,
@@ -112,12 +112,16 @@ if uploaded_file is not None:
 
         if st.button("Importar Dato"):
             data = df.to_dict(orient="records")
+            for fila in data:
+                fila.pop("Evaluadora", None) 
             response = addEvaluado(data)
+
             if response.data != None :
                 st.success("Datos importados exitosamente.")
                 st.rerun()
 
     except Exception as e:
+        st.write(e)
         if(e.code=='23505'):
             st.error("Estas intentando agregar emails que ya existen. Eliminalos del csv e intenta nuevamente")
         else:
@@ -129,7 +133,6 @@ st.divider()
 
 
 st.subheader("Asignar consultora a un evaluado")
-
 # Elegir evaluado por email o nombre
 evaluados_opciones = {f"{e['nombre']} ({e['correo_electronico']})": e["id"] for e in evaluados_filtrados}
 evaluado_seleccionado = st.selectbox("Seleccioná un evaluado", list(sorted(evaluados_opciones.keys())))
