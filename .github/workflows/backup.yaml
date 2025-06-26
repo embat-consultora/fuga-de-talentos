@@ -56,3 +56,19 @@ jobs:
           git add -f backups/
           git commit -m "📦 Supabase schema + data backup on $(date +'%Y-%m-%d')" || echo "Nothing to commit"
           git push
+      
+      - name: Clean old backups (keep only today and yesterday)
+        run: |
+          TODAY=$(date +'%Y-%m-%d')
+          YESTERDAY=$(date -d "yesterday" +'%Y-%m-%d')
+
+          echo "Manteniendo backups de: $TODAY y $YESTERDAY"
+          
+          for file in backups/*.sql; do
+            if [[ "$file" != *"$TODAY"* && "$file" != *"$YESTERDAY"* ]]; then
+              echo "🧹 Eliminando $file"
+              rm "$file"
+            else
+              echo "✅ Conservando $file"
+            fi
+          done
