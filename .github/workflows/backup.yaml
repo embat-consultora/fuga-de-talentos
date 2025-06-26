@@ -48,15 +48,6 @@ jobs:
             --use-copy \
             --exclude "auth_tokens" \
             -f backups/data_$TIMESTAMP.sql
-
-      - name: Commit and push backup
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add -f backups/
-          git commit -m "📦 Supabase schema + data backup on $(date +'%Y-%m-%d')" || echo "Nothing to commit"
-          git push
-      
       - name: Clean old backups (keep only today and yesterday)
         run: |
           TODAY=$(date +'%Y-%m-%d')
@@ -72,3 +63,12 @@ jobs:
               echo "✅ Conservando $file"
             fi
           done
+      - name: Commit and push backup
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add -f backups/
+          git commit -m "📦 Supabase schema + data backup on $(date +'%Y-%m-%d')" || echo "Nothing to commit"
+          git push
+      
+
