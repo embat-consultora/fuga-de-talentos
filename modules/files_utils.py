@@ -1,13 +1,21 @@
-from docxtpl import DocxTemplate
+import streamlit as st
 import io
 import os
 from modules.data_base import generarInformeCompleto
-import streamlit as st
+from docxtpl import DocxTemplate, InlineImage,RichText
 from modules.graph_utils import  generar_grafico_radar,generar_barras_idiomas
 from docx.shared import Mm
-from docxtpl import DocxTemplate, InlineImage
 from datetime import datetime
 
+def get_color_por_nivel(nivel_id):
+    if nivel_id == 1:
+        return "ea5b0d"  # naranja
+    elif nivel_id == 2:
+        return "f1d255"  # amarillo
+    elif nivel_id in [3, 4, 5]:
+        return "1eaf8c"  # verde
+    else:
+        return "000000"  # negro por defecto (nivel desconocido)
 def generar_docx_con_datos(informe_data):
     base_path = os.path.dirname(os.path.abspath(__file__))
     nombreInforme = f"informe{informe_data["tipoInforme"]}.docx"
@@ -45,20 +53,32 @@ def generar_docx_con_datos(informe_data):
     competencias_context = []
 
     for nombre, datos in informe_data.get("competencias", {}).items():
+        color = get_color_por_nivel(datos["ponderacion"])
+
+        competencia_nivel = RichText()
+        competencia_nivel.add(datos["nivelId"], color=color,bold=True)
         competencias_context.append({
-            "competenciaNombre": datos["competenciaNombre"],
-            "valor": datos["nivelId"],
+            "competenciaNombre":  datos["competenciaNombre"],
+            "valor": competencia_nivel,
             "comment": datos["comment"],
             "ponderacion": datos["ponderacion"],
             "anio": datos["anio"],
         })
-
-    context["competencias"] = competencias_context
-    if context["competencias"]:
-         grafico_radar = generar_grafico_radar(context["competencias"])
+        context["competencias"] = competencias_context
+    competencias_para_grafico = []
+    for nombre, datos in informe_data.get("competencias", {}).items():
+        competencias_para_grafico.append({
+            "competenciaNombre": datos["competenciaNombre"],  # Texto simple
+            "valor": datos["nivelId"],
+            "ponderacion": datos["ponderacion"],
+            "anio": datos["anio"],
+        })
+    if competencias_para_grafico:
+         grafico_radar = generar_grafico_radar(competencias_para_grafico)
          imagenRadar = InlineImage(doc, grafico_radar, width=Mm(120))
          context["radar"] = imagenRadar
     fortaleza_context = []
+    
     for nombre, datos in informe_data.get("fortalezas", {}).items():
         fortaleza_context.append({
             "fortalezaNombre": datos["fortalezaNombre"],
