@@ -15,7 +15,7 @@ def get_color_por_nivel(nivel_id):
     elif nivel_id in [3, 4, 5]:
         return "1eaf8c"  # verde
     else:
-        return "000000"  # negro por defecto (nivel desconocido)
+        return "000000" 
 def generar_docx_con_datos(informe_data):
     base_path = os.path.dirname(os.path.abspath(__file__))
     nombreInforme = f"informe{informe_data["tipoInforme"]}.docx"

@@ -383,7 +383,7 @@ else:
                 else:
                     st.info(lang["NoDataYet"])
             with st.expander(lang["InterviewDisponibildadGeografica"]):
-                disponibilidadSelected=st.selectbox("",lang["InterviewDisponibilidadList"])
+                disponibilidadSelected = st.selectbox("", lang["InterviewDisponibilidadList"], index=lang["InterviewDisponibilidadList"].index(st.session_state.informe.get("disponibilidad", lang["InterviewDisponibilidadList"][0])))
                 dispBreveDescripcion = st.text_input(lang["InterviewBreveDescripcion"], value=st.session_state.informe.get("breveDescripcionDisponibilidad", ""),key="dispBreveDescripcion")
                 dispDescripcion = st.text_area(lang["Comment"], value=st.session_state.informe.get("disponibilidadComment", ""),key="dispDescripcion")
                 st.session_state.informe["disponibilidad"] = disponibilidadSelected
