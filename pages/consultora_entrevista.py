@@ -103,7 +103,7 @@ else:
     else:
         default_index = 0
     with tipoCol:
-        tipoInformeSeleccionado = st.selectbox(lang["InterviewTipoInforme"], nombreInformes,key="tipoInforme_seleccionado", index=default_index)
+        tipoInformeSeleccionado = st.selectbox(lang["InterviewTipoInforme"], nombreInformes,key="tipoInforme_seleccionado", index=default_index, disabled=True)
         if "tipoInforme_anterior" not in st.session_state:
             st.session_state.tipoInforme_anterior = st.session_state.tipoInforme_seleccionado
         if st.session_state.tipoInforme_anterior != st.session_state.tipoInforme_seleccionado:
