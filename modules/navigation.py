@@ -37,6 +37,7 @@ def render_menu(role):
                 st.page_link("pages/pm_usuarios.py", label=lang['titleUsers'])
                 #st.page_link("pages/pm_clientes.py", label=lang['titleClients'])
                 st.page_link("pages/pm_evaluados.py", label=lang['titleEvaluados'])
+                st.page_link("pages/cliente_dashboard.py", label=lang['menuClientDashboard'])
                 st.write("")
                 st.write("")
 
@@ -47,19 +48,19 @@ def render_menu(role):
                 st.page_link("pages/consultora_entrevista.py", label=lang['titleInterview'])
                 st.write("")
                 st.write("")
-
                 if st.button(lang['logoutButton']):
                     st.logout()
             if(role=="embatAdmin"):
                 st.page_link("pages/consultora_calendar.py", label=lang['titleCalendar'])
                 st.page_link("pages/consultora_entrevista.py", label=lang['titleInterview'])
+                st.page_link("pages/cliente_dashboard.py", label=lang['menuClientDashboard'])
                 st.write("")
                 st.write("")
 
                 if st.button(lang['logoutButton']):
                     st.logout()
             if(role=="cliente"):
-                st.page_link("pages/cliente_planning.py", label=lang['menuClientPlanning'])
+                st.page_link("pages/cliente_dashboard.py", label=lang['menuClientPlanning'])
                 st.write("")
                 st.write("")
 

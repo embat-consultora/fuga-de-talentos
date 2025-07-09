@@ -32,6 +32,7 @@ texts = {
     {"name": "Laura Pérez", "testimonial": "Gracias a la plataforma, ahora tenemos empleados más comprometidos y productivos."},
 ],
     "menuClientPlanning":"Planning",
+    "menuClientDashboard": "Dashboard",
     "InterviewDropdownText":"Persona a evaluar",
     "InterviewTipoInforme":"Selecciona tipo informe",
     "InverviewTitlePerfilProfesional":"PERFIL PROFESIONAL",
