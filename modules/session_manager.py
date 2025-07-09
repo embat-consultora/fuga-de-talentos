@@ -115,5 +115,7 @@ def loadInforme(informe):
         st.session_state.tipoInformeId = informe[0].get("tipoInformeId")
         st.session_state.informe["balanceNivel"] =  informe[0].get("balanceNivel")
         st.session_state.informe["balanceDescripcion"] =  informe[0].get("balanceDescripcion")
-        st.session_state.informe["potencial"] =  informe[0].get("potencial")
+        st.session_state.informe["potencial"] =  informe[0].get("potencial") or "Alto"
+        st.session_state.informe["disponibilidad"] = informe[0].get("disponibilidad") or "Parcial"
+
         
