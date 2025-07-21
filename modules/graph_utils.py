@@ -1,12 +1,7 @@
 import matplotlib.pyplot as plt
 import io
 import numpy as np
-import tempfile
-import streamlit as st
-import plotly.express as px
-import pandas as pd
-import io
-import plotly.io as pio
+
 def generar_barras_idiomas(idiomas_data):
     mapa_niveles = {
     "Básico": 0.4,
@@ -23,9 +18,10 @@ def generar_barras_idiomas(idiomas_data):
         niveles_etiquetas[idioma] = nivel_nombre
     idiomas = list(idiomas_convertidos.keys())
     niveles = list(idiomas_convertidos.values())
-
-    altura_figura = 0.5 if len(idiomas) == 1 else max(2, 0.5 * len(idiomas))
-    altura_barra = 0.1 if len(idiomas) == 1 else 0.1
+    paleta = ['#40a9a0', '#f4b400', '#e67c73', '#34a853', '#4285f4', '#9c27b0']
+    colores = [paleta[i % len(paleta)] for i in range(len(idiomas))]
+    altura_figura = 0.5 if len(idiomas) == 1 else max(1.5, 0.45 * len(idiomas))
+    altura_barra = 0.1 if len(idiomas) == 1 else 0.5
     fig, ax = plt.subplots(figsize=(5, altura_figura))
     y_pos = range(len(idiomas))
 
@@ -34,7 +30,7 @@ def generar_barras_idiomas(idiomas_data):
     ax.barh(y_pos, [1]*len(idiomas), color='#e6e6e6', edgecolor='none', height=altura_barra)
 
     # Barra de nivel (color)
-    ax.barh(y_pos, niveles, color='#40a9a0', edgecolor='none', height=altura_barra)
+    ax.barh(y_pos, niveles, color=colores, edgecolor='none', height=altura_barra)
     for i, idioma in enumerate(idiomas):
             ax.text(niveles[i] + 0.02, i, niveles_etiquetas[idioma], va='center', ha='left', fontsize=10)
     # Etiquetas
