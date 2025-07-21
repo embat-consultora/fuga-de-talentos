@@ -3,8 +3,10 @@ import io
 import numpy as np
 import tempfile
 import streamlit as st
-
-
+import plotly.express as px
+import pandas as pd
+import io
+import plotly.io as pio
 def generar_barras_idiomas(idiomas_data):
     mapa_niveles = {
     "Básico": 0.4,
@@ -71,23 +73,20 @@ def generar_grafico_radar(categorias):
 
     # Crear gráfico
     fig, ax = plt.subplots(figsize=(6, 6), subplot_kw=dict(polar=True))
-
+    ax.set_theta_zero_location('N')       # 0° apunta hacia arriba
+    ax.set_theta_direction(-1)   
     # Graficar
     ax.plot(angulos, valores_ext, label=anio, linestyle='solid', color='navy')
     ax.fill(angulos, valores_ext, alpha=0.1, color='navy')
-
-    # Estética
-    # ax.set_xticks(angulos[:-1])
-    # ax.set_xticklabels(nombres, fontsize=9)
     
-    ax.set_xticks([])
-
+    ax.set_xticks(angulos[:-1]) 
+    ax.set_xticklabels([''] * len(nombres)) 
     # Dibujar etiquetas personalizadas más afuera del círculo
     for i, nombre in enumerate(nombres):
         ang = angulos[i]
         ax.text(
             ang,
-            6.2,  # alejarlas del centro; ajustá este valor si querés más o menos distancia
+            6,  # alejarlas del centro; ajustá este valor si querés más o menos distancia
             nombre,
             ha='center',
             va='center',
@@ -108,5 +107,54 @@ def generar_grafico_radar(categorias):
     buffer.seek(0)
 
     return buffer
+
+# def generar_grafico_radar(categorias):
+#     df = pd.DataFrame({
+#         "variable": [c["competenciaNombre"] for c in categorias],
+#         "valor": [c["ponderacion"] for c in categorias]
+#     })
+#     df = pd.concat([df, df.iloc[[0]]], ignore_index=True)
+
+#     fig = px.line_polar(
+#         df,
+#         r="valor",
+#         theta="variable",
+#         line_close=True,
+#         range_r=[0, 5],
+#         title=categorias[0].get("anio", "Evaluación"),
+#         template="plotly_white"
+#     )
+
+#     fig.update_traces(line_color="navy", fill=None)
+
+#     fig.update_layout(
+#         showlegend=False,
+#         polar=dict(
+#             radialaxis=dict(
+#                 tickvals=[1, 2, 3, 4, 5],
+#                 tickfont_size=10,
+#                 visible=True,
+#                 range=[0, 5],
+#                 showline=True,
+#                 showgrid=True,
+#                 gridcolor='gray',    # 👉 color más oscuro
+#                 gridwidth=1   
+#             ),  
+#             angularaxis=dict(
+#                 showline=True,
+#                 showgrid=True,
+#                 gridcolor='gray',    # 👉 también afecta las líneas radiales
+#                 gridwidth=1
+#             )
+#         ),
+#         margin=dict(l=80, r=80, t=80, b=80),
+#     )
+
+#     # Guardar como imagen en BytesIO
+#     buffer = io.BytesIO()
+#     pio.write_image(fig, buffer, format="png", width=500, height=500)
+#     buffer.seek(0)
+#     return buffer
+
  
 
