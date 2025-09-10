@@ -4,8 +4,10 @@ SET session_replication_role = replica;
 -- PostgreSQL database dump
 --
 
+\restrict ujMX8u76AW9Y3pkGBVmJT0YvEF5mvM5da6GMMRNHI8Cm1zNcMQpLkfl8RS3Dbz2
+
 -- Dumped from database version 15.8
--- Dumped by pg_dump version 17.4
+-- Dumped by pg_dump version 17.6
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -2236,5 +2238,7 @@ SELECT pg_catalog.setval('"public"."users_id_seq"', 48, true);
 --
 -- PostgreSQL database dump complete
 --
+
+\unrestrict ujMX8u76AW9Y3pkGBVmJT0YvEF5mvM5da6GMMRNHI8Cm1zNcMQpLkfl8RS3Dbz2
 
 RESET ALL;
